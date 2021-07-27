@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:multiTheme="http://schemas.android.com/apk/multi.theme"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg"
+    multiTheme:enable="true"
+    tools:context=".MainActivity">
+    <TextView
+        android:background="@color/teal_200"
+        android:layout_marginTop="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:id="@+id/copy"
+        android:text="释放主题包到应用内存(切换前必点)"
+        android:textColor="@color/main_text"
+        multiTheme:enable="true"
+        app:layout_constraintBottom_toTopOf="@+id/change_skin"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:background="@color/teal_200"
+        android:layout_marginTop="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:id="@+id/change_skin"
+        android:text="切换主题"
+        android:textColor="@color/main_text"
+        multiTheme:enable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/copy" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
