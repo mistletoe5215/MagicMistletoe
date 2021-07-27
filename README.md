@@ -1,5 +1,5 @@
 
-### Magic Mistletoe Android多主题（换肤）切换框架
+### Magic Mistletoe Android多主题（换肤）切换框架 [![](https://jitpack.io/v/mistletoe5215/MagicMistletoe.svg)](https://jitpack.io/#mistletoe5215/MagicMistletoe)
 
  - 背景
  
@@ -20,7 +20,22 @@
 ``` 
   拷贝生成的apk至`宿主app`的assets目录下,重命名为`你喜欢的名字.zip`（如果有强迫症）
  
- > STEP 2 依赖多主题Library,执行切换
+ > STEP 2 依赖多主题框架AAR
+
+  ```groovy
+  //in root build.gradle
+  allprojects {
+		repositories {
+			maven { url 'https://jitpack.io' }
+		}
+	}
+  // in app/module build.gradle
+  dependencies {
+  	        implementation 'com.github.mistletoe5215:MagicMistletoe:1.0.0'
+  	}
+
+ ```
+ > > STEP 3 代码执行切换
 
  ```kotlin
    /**
