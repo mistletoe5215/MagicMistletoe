@@ -260,6 +260,8 @@
 
    - 新建前景色属性Attr类，继承`com.magic.multi.theme.core.base.BaseAttr`,实现其`apply`方法
 
+   - 如果属性与系统属性名称不一致，需要立即apply，则复写BaseAttr的`applyImmediate`为true
+   
  ```kotlin
 /**
  * Created by mistletoe
