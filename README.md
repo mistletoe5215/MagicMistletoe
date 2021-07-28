@@ -96,7 +96,86 @@
             return false
         }
   ```
- > STEP 3 代码执行切换
+ > STEP 3 XML中需要更换主题的控件设置好多主题属性` multiTheme:enable="true"`
+
+ ```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:multiTheme="http://schemas.android.com/apk/multi.theme"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg"
+    multiTheme:enable="true"
+    tools:context=".MainActivity">
+    <com.google.android.material.imageview.ShapeableImageView
+        android:src="@drawable/ic_avatar"
+        android:layout_marginTop="20dp"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:scaleType="centerCrop"
+        android:id="@+id/avatar"
+        android:background="@color/main_text"
+        multiTheme:enable="true"
+        app:shapeAppearance="@style/CircleStyle"
+        app:layout_constraintBottom_toTopOf="@+id/copy"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:background="@color/teal_200"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:id="@+id/copy"
+        android:text="释放主题包到应用内存(切换前必点)"
+        android:textColor="@color/main_text"
+        multiTheme:enable="true"
+        app:layout_constraintBottom_toTopOf="@+id/change_skin"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/avatar" />
+
+    <TextView
+        android:background="@color/teal_200"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:id="@+id/change_skin"
+        android:text="切换主题"
+        android:textColor="@color/main_text"
+        multiTheme:enable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/copy" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+ ```
+ 
+ ##### 注意，如果自定义View在代码中去手动用代码显式设置文字颜色、View背景以及图片资源的场景，实现多主题切换，需要调用以下方式获取资源id，而不是直接引用R文件的资源id
+ 
+ ```kotlin
+
+  //获取多主题色值ID
+  SkinLoadManager.getInstance().getColor(attrValue)
+  //获取多主题图片ID
+  SkinLoadManager.getInstance().getDrawable(attrValue)
+  //获取多主题字符串ID
+  SkinLoadManager.getInstance().getTextString(attrValue)
+  
+```
+
+
+ > STEP 4 代码执行切换
 
  ```kotlin
     /**
