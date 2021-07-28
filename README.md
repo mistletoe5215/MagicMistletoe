@@ -252,3 +252,99 @@
        **/
      SkinLoadManager.getInstance().restoreDefaultTheme()
 ```
+ #### 拓展使用
+ 
+ > 有时候我们想自定义一些主题切换属性实现，怎么办？使用`SkinLoadManager`的`configCustomAttrs`
+
+ > 比如，我们现在想在头像前面盖一个前景色，切换主题后，前景色也跟着切换，它的实现如下
+
+   - 新建前景色属性Attr类，继承`com.magic.multi.theme.core.base.BaseAttr`,实现其`apply`方法
+
+ ```kotlin
+/**
+ * Created by mistletoe
+ * on 7/28/21
+ **/
+class ImageForegroundAttr:BaseAttr() {
+    override fun apply(view: View?) {
+       when(view){
+           is AppCompatImageView ->{
+               if ("foreground".equals(attrName, true)) {
+                   view.foreground = SkinLoadManager.getInstance().getDrawable(attrValue)
+               }
+           }
+           is ImageView ->{
+               if ("foreground".equals(attrName, true)) {
+                   view.foreground = SkinLoadManager.getInstance().getDrawable(attrValue)
+               }
+           }
+       }
+    }
+}
+
+```
+   - 将`foreground`（注意，这个key不可以乱取，必须与`xml`中前景属性的名字一致）与ImageForegroundAttr 分别作为key-value, 放入`configCustomAttrs`中
+   
+```kotlin
+       //增加一个设置前景图片属性
+        val configMap = mutableMapOf<String,BaseAttr>().apply {
+            put("foreground",ImageForegroundAttr())
+        }
+        SkinLoadManager.getInstance().configCustomAttrs(configMap)
+```   
+
+  - 预先在宿主app和主题包中定义`image_foreground_modal`相同名称的前景drawable资源，宿主app前景色为`#4DFFFFFF`(30%的灰白) ，皮肤包为`#330000FF`(20%的淡蓝)
+  
+  宿主app
+  
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#4DFFFFFF" />
+    <corners android:radius="110dp" />
+</shape>
+```  
+  主题包zip
+   
+ ```xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#330000FF" />
+    <corners android:radius="110dp" />
+</shape>
+ ```  
+   - 在布局中声明使用
+   
+```xml
+  <com.google.android.material.imageview.ShapeableImageView
+        android:src="@drawable/ic_avatar"
+        android:layout_marginTop="20dp"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:scaleType="centerCrop"
+        android:id="@+id/avatar"
+        android:background="@color/main_text"
+        android:foreground="@drawable/image_foreground_modal"
+        multiTheme:enable="true"
+        app:shapeAppearance="@style/CircleStyle"
+        app:layout_constraintBottom_toTopOf="@+id/copy"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+```   
+
+   - 可以观察到
+   
+ > 初始头像的前景色
+    
+   ![](./snapshots/origin_avatar_foreground.png) 
+    
+    
+ > 切换主题后的前景色
+
+   ![](./snapshots/blue_avatar_foreground.png) 
+   
+   
+ 这样一个前景色的自定义主题切换设置就完成了

@@ -16,6 +16,7 @@
         android:scaleType="centerCrop"
         android:id="@+id/avatar"
         android:background="@color/main_text"
+        android:foreground="@drawable/image_foreground_modal"
         multiTheme:enable="true"
         app:shapeAppearance="@style/CircleStyle"
         app:layout_constraintBottom_toTopOf="@+id/copy"

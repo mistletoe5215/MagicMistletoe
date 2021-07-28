@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import com.magic.multi.theme.core.action.SkinLoadManager
+import com.magic.multi.theme.core.base.BaseAttr
 
 /**
  * Created by mistletoe
@@ -13,6 +14,12 @@ class DemoApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         SkinLoadManager.getInstance().init(this)
+        //增加一个设置前景图片属性
+        val configMap = mutableMapOf<String,BaseAttr>().apply {
+            put("foreground",ImageForegroundAttr())
+        }
+        SkinLoadManager.getInstance().configCustomAttrs(configMap)
+
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
                 super.onActivityPreCreated(activity, savedInstanceState)
