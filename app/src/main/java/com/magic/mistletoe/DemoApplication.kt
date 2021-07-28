@@ -15,8 +15,8 @@ class DemoApplication : Application() {
         super.onCreate()
         SkinLoadManager.getInstance().init(this)
         //增加一个设置前景图片属性
-        val configMap = mutableMapOf<String,BaseAttr>().apply {
-            put("foreground",ImageForegroundAttr())
+        val configMap = mutableMapOf<String,Class<out BaseAttr>>().apply {
+            put("foreground",ImageForegroundAttr::class.java)
         }
         SkinLoadManager.getInstance().configCustomAttrs(configMap)
 

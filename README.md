@@ -286,9 +286,9 @@ class ImageForegroundAttr:BaseAttr() {
    - 将`foreground`（注意，这个key不可以乱取，必须与`xml`中前景属性的名字一致）与ImageForegroundAttr 分别作为key-value, 放入`configCustomAttrs`中
    
 ```kotlin
-       //增加一个设置前景图片属性
-        val configMap = mutableMapOf<String,BaseAttr>().apply {
-            put("foreground",ImageForegroundAttr())
+        //增加一个设置前景图片属性
+        val configMap = mutableMapOf<String,Class<out BaseAttr>>().apply {
+                  put("foreground",ImageForegroundAttr::class.java)
         }
         SkinLoadManager.getInstance().configCustomAttrs(configMap)
 ```   
