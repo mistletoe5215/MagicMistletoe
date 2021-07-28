@@ -9,12 +9,15 @@ import android.text.TextUtils
 import android.util.Log
 import com.magic.multi.theme.core.api.ILoadListener
 import com.magic.multi.theme.core.api.IOperationHandler
+import com.magic.multi.theme.core.base.BaseAttr
+import com.magic.multi.theme.core.constants.AttrConstants
 import com.magic.multi.theme.core.constants.SkinConfig.MULTI_THEME_TAG
 import com.magic.multi.theme.core.exception.SkinLoadException
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.NULL_SKIN_PATH_EXCEPTION
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_FILE_NOT_EXISTS
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_GET_NULL_RESOURCES
 import com.magic.multi.theme.core.factory.MultiThemeFactory
+import com.magic.multi.theme.core.utils.AttrConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -224,6 +227,13 @@ class SkinLoadManager private constructor() : IOperationHandler {
      */
     override fun applyTheme() {
        multiThemeFactory.applyTheme()
+    }
+
+    override fun configCustomAttrs(attrMap: MutableMap<String, BaseAttr>) {
+        attrMap.forEach {
+            AttrConfig.externalAttrMap[it.key] = it.value
+        }
+        AttrConstants.attrConstantList.addAll(attrMap.keys)
     }
 
     override fun clean() {

@@ -8,9 +8,25 @@
     android:background="@color/main_bg"
     multiTheme:enable="true"
     tools:context=".MainActivity">
+    <com.google.android.material.imageview.ShapeableImageView
+        android:src="@drawable/ic_avatar"
+        android:layout_marginTop="20dp"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:scaleType="centerCrop"
+        android:id="@+id/avatar"
+        android:background="@color/main_text"
+        multiTheme:enable="true"
+        app:shapeAppearance="@style/CircleStyle"
+        app:layout_constraintBottom_toTopOf="@+id/copy"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
     <TextView
         android:background="@color/teal_200"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:gravity="center"
@@ -21,11 +37,11 @@
         app:layout_constraintBottom_toTopOf="@+id/change_skin"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/avatar" />
 
     <TextView
         android:background="@color/teal_200"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:gravity="center"

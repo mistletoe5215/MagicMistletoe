@@ -12,7 +12,7 @@ import com.magic.multi.theme.core.constants.SkinConfig.MULTI_THEME_TAG
  * Created by mistletoe
  * on 7/23/21
  **/
-class BackgroundAttr : BaseAttr() {
+internal class BackgroundAttr : BaseAttr() {
     override fun apply(view: View?) {
         when (entryType) {
             BACKGROUND_COLOR -> {

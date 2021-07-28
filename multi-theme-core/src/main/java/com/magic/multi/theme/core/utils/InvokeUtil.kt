@@ -8,7 +8,7 @@ import android.util.AttributeSet
  * Created by mistletoe
  * on 7/27/21
  **/
-object InvokeUtil {
+internal object InvokeUtil {
     /**
      * 通过反射创建带2个构造参数的View
      **/

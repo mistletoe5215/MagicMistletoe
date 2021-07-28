@@ -20,7 +20,7 @@ import com.magic.multi.theme.core.utils.InvokeUtil
  * Created by mistletoe
  * on 7/27/21
  **/
-class MultiThemeFactory : LayoutInflater.Factory, IOperationHandler {
+class MultiThemeFactory : LayoutInflater.Factory {
     private val mSkinViews: MutableList<SkinView> = mutableListOf()
     override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
         var view: View? = null
@@ -105,7 +105,7 @@ class MultiThemeFactory : LayoutInflater.Factory, IOperationHandler {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    override fun applyTheme() {
+    internal fun applyTheme() {
         for (skinView in mSkinViews) {
             if (null != skinView.view) {
                 skinView.apply()
@@ -114,7 +114,7 @@ class MultiThemeFactory : LayoutInflater.Factory, IOperationHandler {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    override fun clean() {
+    internal fun clean() {
         if (mSkinViews.isEmpty()) {
             return
         }

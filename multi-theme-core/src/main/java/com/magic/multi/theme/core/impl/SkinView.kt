@@ -9,7 +9,7 @@ import com.magic.multi.theme.core.base.BaseAttr
  * Created by mistletoe
  * on 7/27/21
  **/
-class SkinView {
+internal class SkinView {
     var view: View? = null
     var attrs: MutableList<BaseAttr> = mutableListOf()
     fun apply() {

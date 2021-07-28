@@ -13,7 +13,7 @@ import com.magic.multi.theme.core.constants.SkinConfig
  * Created by mistletoe
  * on 7/27/21
  **/
-class ImageAttr : BaseAttr() {
+internal class ImageAttr : BaseAttr() {
     override fun apply(view: View?) {
         when (view) {
             is ImageView -> {

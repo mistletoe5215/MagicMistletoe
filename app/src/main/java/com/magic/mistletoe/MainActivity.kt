@@ -18,8 +18,6 @@ import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        SkinLoadManager.getInstance().init(application)
-        layoutInflater.factory = SkinLoadManager.getInstance().multiThemeFactory
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initClick()
@@ -27,39 +25,42 @@ class MainActivity : AppCompatActivity() {
 
     private var toggle: Boolean = false
     private val fileName = "theme-pkg.zip"
+
     @SuppressLint("RestrictedApi")
     private fun initClick() {
         findViewById<TextView>(R.id.copy).setOnClickListener {
             ArchTaskExecutor.getIOThreadExecutor().execute {
                 copyAssetAndWrite(fileName)
                 ArchTaskExecutor.getMainThreadExecutor().execute {
-                    Toast.makeText(this,"成功",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "成功", Toast.LENGTH_SHORT).show()
                 }
             }
         }
         findViewById<TextView>(R.id.change_skin).setOnClickListener {
             if (!toggle) {
                 val dataFile = File(cacheDir, fileName)
-                SkinLoadManager.getInstance().loadSkin(dataFile.absolutePath, object : ILoadListener {
-                    override fun onStart() {
-                        Log.i("Mistletoe", "onStart")
-                    }
+                SkinLoadManager.getInstance()
+                    .loadSkin(dataFile.absolutePath, object : ILoadListener {
+                        override fun onStart() {
+                            Log.i("Mistletoe", "onStart")
+                        }
 
-                    override fun onSuccess() {
-                        Log.i("Mistletoe", "onSuccess")
-                    }
+                        override fun onSuccess() {
+                            Log.i("Mistletoe", "onSuccess")
+                        }
 
-                    override fun onFailed(e: SkinLoadException) {
-                        Log.e("Mistletoe", "onFailed:${e.message}")
-                    }
+                        override fun onFailed(e: SkinLoadException) {
+                            Log.e("Mistletoe", "onFailed:${e.message}")
+                        }
 
-                })
+                    })
             } else {
                 SkinLoadManager.getInstance().restoreDefaultTheme()
             }
             toggle = !toggle
         }
     }
+
     @Suppress("SameParameterValue")
     private fun copyAssetAndWrite(fileName: String): Boolean {
         try {

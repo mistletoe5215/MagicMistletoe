@@ -1,6 +1,5 @@
 package com.magic.multi.theme.core.utils
 
-import androidx.annotation.RestrictTo
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.constants.AttrConstants
 import com.magic.multi.theme.core.constants.AttrConstants.BACKGROUND
@@ -17,20 +16,9 @@ import com.magic.multi.theme.core.impl.TextColorAttr
  * Created by mistletoe
  * on 7/27/21
  */
-object AttrConfig {
+internal object AttrConfig {
 
-    private val externalAttrMap = mutableMapOf<String, BaseAttr>()
-
-    /**
-     * 允许外部配置自定义View的换主题属性
-     * @param attrMap 自定义属性映射
-     */
-    fun configCustomAttrs(attrMap: MutableMap<String, BaseAttr>) {
-        attrMap.forEach {
-            externalAttrMap[it.key] = it.value
-        }
-        AttrConstants.attrConstantList.addAll(attrMap.keys)
-    }
+    val externalAttrMap = mutableMapOf<String, BaseAttr>()
 
     /**
      * 根据不同的属性名称创建不同的属性实例对象
@@ -40,7 +28,6 @@ object AttrConfig {
      * @param typeName 属性值类型
      * @return 属性实例对象
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun get(
         attrName: String,
         attrValueRefId: Int,
@@ -85,7 +72,6 @@ object AttrConfig {
      * @param attrName 属性名
      * @return true: 支持 false: 不支持
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun isSupportedAttr(attrName: String?): Boolean {
         return AttrConstants.attrConstantList.contains(attrName)
     }

@@ -11,7 +11,7 @@ import com.magic.multi.theme.core.constants.AttrConstants
  * Created by mistletoe
  * on 7/27/21
  **/
-class TextColorAttr : BaseAttr() {
+internal class TextColorAttr : BaseAttr() {
     override fun apply(view: View?) {
         when (view) {
             is TextView -> {
