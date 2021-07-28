@@ -12,12 +12,15 @@
   #### 效果展示
    
   > 默认主题
+
   ![](./snapshots/origin_theme.png)
   
   > 点击切换主题
+
   ![](./snapshots/dark_theme.png)
   
   #### 最佳使用方式
+  
   > STEP 1 宿主项目(示例Demo为本项目`app`模块)依赖多主题框架AAR
  
    ```groovy
@@ -36,17 +39,28 @@
 
   > STEP 2 制作多主题包 
  
-  > 找个壳工程，在res下放置资源文件，`注意` 资源文件名称需要与`宿主app`内的资源文件名称保持一致，这样主题切换的时候才可以成功替换
+  > 找个壳工程(本Demo为`theme-pkg`模块)，在res下放置资源文件，`注意` 资源文件名称需要与`宿主app`内的资源文件名称保持一致，这样主题切换的时候才可以成功替换
+
   ![](./snapshots/mk_theme_0.png)
+  
   > 执行打包命令
+
   ![](./snapshots/mk_theme_1.png)
+  
   > 找到生成的资源apk
+
   ![](./snapshots/mk_theme_2.png)
+  
   > 重命名为`你喜欢的名字.zip`（如果有强迫症）
+
   ![](./snapshots/mk_theme_3.png)
+  
   > 这里是做演示，（实际商用过程中，可将zip包给服务端，进行主题包签名处理，后通过下载的形式down到本地，解签，应用）拷贝主题文件至`宿主app`的assets目录下
+
   ![](./snapshots/mk_theme_4.png)
+  
   > 释放assets目录主题文件至私有路径
+
   ```kotlin
      private fun copyAssetAndWrite(fileName: String): Boolean {
             try {
