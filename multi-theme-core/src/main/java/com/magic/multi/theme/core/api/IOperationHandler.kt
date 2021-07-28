@@ -11,11 +11,13 @@ interface IOperationHandler {
      * 应用主题
      */
     fun applyTheme()
+
     /**
      * 允许外部配置自定义View的换主题属性映射
      * @param attrMap 自定义属性映射
      */
-    fun configCustomAttrs(attrMap: MutableMap<String, BaseAttr>)
+    fun configCustomAttrs(attrMap: MutableMap<String, Class<out BaseAttr>>)
+
     /**
      * 清空当前缓存视图集
      */

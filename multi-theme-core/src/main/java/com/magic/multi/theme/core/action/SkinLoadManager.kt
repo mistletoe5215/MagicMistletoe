@@ -222,14 +222,15 @@ class SkinLoadManager private constructor() : IOperationHandler {
         mResource = app.resources
         applyTheme()
     }
+
     /**
      * 通知所有缓存页面集的页面更新主题皮肤
      */
     override fun applyTheme() {
-       multiThemeFactory.applyTheme()
+        multiThemeFactory.applyTheme()
     }
 
-    override fun configCustomAttrs(attrMap: MutableMap<String, BaseAttr>) {
+    override fun configCustomAttrs(attrMap: MutableMap<String, Class<out BaseAttr>>) {
         attrMap.forEach {
             AttrConfig.externalAttrMap[it.key] = it.value
         }
@@ -237,6 +238,6 @@ class SkinLoadManager private constructor() : IOperationHandler {
     }
 
     override fun clean() {
-       multiThemeFactory.clean()
+        multiThemeFactory.clean()
     }
 }

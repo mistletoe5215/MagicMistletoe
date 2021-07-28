@@ -18,7 +18,7 @@ import com.magic.multi.theme.core.impl.TextColorAttr
  */
 internal object AttrConfig {
 
-    val externalAttrMap = mutableMapOf<String, BaseAttr>()
+    val externalAttrMap = mutableMapOf<String, Class<out BaseAttr>>()
 
     /**
      * 根据不同的属性名称创建不同的属性实例对象
@@ -36,12 +36,13 @@ internal object AttrConfig {
     ): BaseAttr? {
         //读取外部设置的属性
         if (externalAttrMap.keys.contains(attrName)) {
-            val mExternalSkinAttr = externalAttrMap[attrName]
-            mExternalSkinAttr?.attrName = attrName
-            mExternalSkinAttr?.attrValue = attrValueRefId
-            mExternalSkinAttr?.entryName = attrValueRefName
-            mExternalSkinAttr?.entryType = typeName
-            return mExternalSkinAttr
+            val mExternalSkinAttrClazz = externalAttrMap[attrName]
+            val mExternalSkinAttrObj = mExternalSkinAttrClazz?.newInstance()
+            mExternalSkinAttrObj?.attrName = attrName
+            mExternalSkinAttrObj?.attrValue = attrValueRefId
+            mExternalSkinAttrObj?.entryName = attrValueRefName
+            mExternalSkinAttrObj?.entryType = typeName
+            return mExternalSkinAttrObj
         }
         val mSkinAttr: BaseAttr = when (attrName) {
             BACKGROUND -> {
