@@ -47,7 +47,7 @@
         android:layout_height="100dp"
         android:gravity="center"
         android:id="@+id/change_skin"
-        android:text="切换主题"
+        android:text="@string/change_theme"
         android:textColor="@color/main_text"
         multiTheme:enable="true"
         app:layout_constraintBottom_toBottomOf="parent"

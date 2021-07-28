@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MagicMistletoe</string>
+    <string name="change_theme">切换到黑色主题</string>
 </resources>

@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RestrictTo
 import com.magic.multi.theme.core.action.SkinLoadManager
-import com.magic.multi.theme.core.api.IOperationHandler
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.constants.SkinConfig
 import com.magic.multi.theme.core.constants.SkinConfig.MULTI_THEME_TAG
@@ -100,6 +99,13 @@ class MultiThemeFactory : LayoutInflater.Factory {
             mSkinViews.add(skinView)
             if (SkinLoadManager.getInstance().isExternalSkin) {
                 skinView.apply()
+            }
+            //如果含有立即apply的属性，则在解析时立即执行它的apply
+            if(skinView.attrs.any { it.applyImmediate }){
+                val immediateAttrs = skinView.attrs.filter{ it.applyImmediate }
+                immediateAttrs.forEach {
+                    it.apply(skinView.view)
+                }
             }
         }
     }
