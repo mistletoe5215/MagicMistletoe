@@ -30,7 +30,7 @@ abstract class BaseAttr {
     /**
      * 是否在解析时立即apply
      */
-    var applyImmediate: Boolean = false
+    open var applyImmediate: Boolean = false
 
     /**
      *  刷新该控件的该属性
