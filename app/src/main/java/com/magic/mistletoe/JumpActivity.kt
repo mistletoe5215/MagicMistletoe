@@ -3,25 +3,22 @@ package com.magic.mistletoe
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
-
-class MainActivity : AppCompatActivity() {
+/**
+ * Created by mistletoe
+ * on 2021/8/18
+ **/
+class JumpActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        findViewById<TextView>(R.id.jump).setOnClickListener {
-            Intent(this,JumpActivity::class.java).apply {
+        setContentView(R.layout.activity_second)
+        findViewById<TextView>(R.id.jump_setting).setOnClickListener {
+            Intent(this,SettingActivity::class.java).apply {
                 startActivity(this)
             }
         }
     }
 
-
-    override fun onNightModeChanged(mode: Int) {
-        super.onNightModeChanged(mode)
-        Log.i("Mis","onNightModeChanged")
-    }
 }

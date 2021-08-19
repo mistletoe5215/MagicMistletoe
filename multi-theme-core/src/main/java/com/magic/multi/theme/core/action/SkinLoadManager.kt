@@ -1,5 +1,6 @@
 package com.magic.multi.theme.core.action
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
@@ -7,6 +8,12 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import androidx.arch.core.executor.ArchTaskExecutor
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import com.magic.multi.theme.core.annotation.CalledAfterSetThemeFactory
 import com.magic.multi.theme.core.api.ILoadListener
 import com.magic.multi.theme.core.api.IOperationHandler
 import com.magic.multi.theme.core.base.BaseAttr
@@ -17,6 +24,7 @@ import com.magic.multi.theme.core.exception.SkinLoadException.Companion.NULL_SKI
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_FILE_NOT_EXISTS
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_GET_NULL_RESOURCES
 import com.magic.multi.theme.core.factory.MultiThemeFactory
+import com.magic.multi.theme.core.strategy.IThemeLoadStrategy
 import com.magic.multi.theme.core.utils.AttrConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,34 +80,27 @@ class SkinLoadManager private constructor() : IOperationHandler {
      * 换肤task协程scope
      */
     private val mScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
-
     /**
-     * 多主题工厂实例
+     * 当前页面-> MultiThemeFactory 集合
      */
-    val multiThemeFactory: MultiThemeFactory = MultiThemeFactory()
+    private val mPageFactoryMap:MutableMap<AppCompatActivity,MultiThemeFactory> = mutableMapOf()
+    /**
+     * 主题包Map，key 主题包名称 value
+     */
 
     /**
      * 初始化
      */
-    fun init(app: Application) {
+    override fun init(app: Application) {
         this.app = app
     }
-
-    /**
-     * 重载一个异步加载皮肤资源文件的方法,适应静默加载的场景
-     * @param mSkinFilePath 资源文件路径
-     */
-    fun loadSkin(mSkinFilePath: String?) {
-        this.loadSkin(mSkinFilePath, null)
-    }
-
     /**
      * 异步加载皮肤资源文件
      * @param mSkinFilePath 资源文件路径
      * @param iLoadListener 加载皮肤资源文件结果回调
      */
     @Suppress("ThrowableNotThrown")
-    fun loadSkin(mSkinFilePath: String?, iLoadListener: ILoadListener?) {
+    private fun loadSkin(mSkinFilePath: String?, iLoadListener: ILoadListener?) {
         mScope.launch {
             Log.i(MULTI_THEME_TAG, "begin load skin resource")
             iLoadListener?.onStart()
@@ -139,7 +140,6 @@ class SkinLoadManager private constructor() : IOperationHandler {
                 resources?.let { res ->
                     mResource = res
                     iLoadListener?.onSuccess()
-                    applyTheme()
                 } ?: run {
                     isDefaultSkin = true
                     iLoadListener?.onFailed(SkinLoadException(SKIN_GET_NULL_RESOURCES))
@@ -222,12 +222,36 @@ class SkinLoadManager private constructor() : IOperationHandler {
         mResource = app.resources
         applyTheme()
     }
-
+    @CalledAfterSetThemeFactory
+    override fun bindPage(page: AppCompatActivity) {
+        (page.layoutInflater.factory as? MultiThemeFactory)?.apply {
+            mPageFactoryMap[page] = this
+        }
+        page.lifecycle.addObserver(object :LifecycleObserver{
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun onDestroy(){
+                mPageFactoryMap.remove(page)
+            }
+        })
+    }
+    @SuppressLint("RestrictedApi")
+    override fun loadThemeByStrategy(strategy: IThemeLoadStrategy,iLoadListener : ILoadListener?){
+        ArchTaskExecutor.getIOThreadExecutor().execute{
+            val filePath  = strategy.getOrGenerateThemePackage(this.app)
+            if(filePath.isNullOrEmpty()){
+                iLoadListener?.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
+            }else{
+                loadSkin(filePath,iLoadListener)
+            }
+        }
+    }
     /**
      * 通知所有缓存页面集的页面更新主题皮肤
      */
     override fun applyTheme() {
-        multiThemeFactory.applyTheme()
+        mPageFactoryMap.forEach{
+            it.value.applyTheme()
+        }
     }
 
     override fun configCustomAttrs(attrMap: MutableMap<String, Class<out BaseAttr>>) {
@@ -238,6 +262,6 @@ class SkinLoadManager private constructor() : IOperationHandler {
     }
 
     override fun clean() {
-        multiThemeFactory.clean()
+        mPageFactoryMap.clear()
     }
 }

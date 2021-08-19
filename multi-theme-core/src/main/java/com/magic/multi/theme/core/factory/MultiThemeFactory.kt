@@ -109,9 +109,7 @@ class MultiThemeFactory : LayoutInflater.Factory {
             }
         }
     }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    internal fun applyTheme() {
+    fun applyTheme() {
         for (skinView in mSkinViews) {
             if (null != skinView.view) {
                 skinView.apply()

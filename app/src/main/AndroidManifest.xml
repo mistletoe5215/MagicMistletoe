@@ -10,13 +10,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MagicMistletoe">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:configChanges="uiMode">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".JumpActivity" android:configChanges="uiMode"/>
+        <activity android:name=".SettingActivity" android:configChanges="uiMode"/>
     </application>
 
 </manifest>

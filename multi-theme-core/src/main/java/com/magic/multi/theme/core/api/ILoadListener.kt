@@ -11,13 +11,13 @@ interface ILoadListener {
     /**
      * 开始加载回调
      */
-    fun onStart()
+    fun onStart(){}
     /**
      * 加载成功回调
      */
-    fun onSuccess()
+    fun onSuccess(){}
     /**
      * 加载失败回调
      */
-    fun onFailed(e:SkinLoadException)
+    fun onFailed(e:SkinLoadException){}
 }
