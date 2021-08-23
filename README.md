@@ -17,7 +17,7 @@
 
   #### 效果展示
   > 整体效果
-```html
+  
   <iframe
   src="https://github.com/mistletoe5215/MagicMistletoe/blob/master/snapshots/2021-08-23-114506.mp4"
   scrolling="no"
@@ -28,7 +28,7 @@
   height=600
   width=800>
   </iframe>
-```
+  
   > 默认主题
 
   ![](./snapshots/origin_theme.png)
