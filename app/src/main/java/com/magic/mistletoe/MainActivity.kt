@@ -17,6 +17,9 @@ class MainActivity : AppCompatActivity() {
                 startActivity(this)
             }
         }
+        findViewById<TextView>(R.id.open_dialog).setOnClickListener {
+            DemoDialog(this).show()
+        }
     }
 
 
