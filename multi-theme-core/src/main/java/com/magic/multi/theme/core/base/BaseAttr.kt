@@ -28,9 +28,9 @@ abstract class BaseAttr {
     var entryType: String? = null
     /**
      * file name
-     * assets 里的文件名称
+     * assets 里的资源名称
      */
-    var fileName: String?  = null
+    var attrAssetsValue: String?  = null
     /**
      * 是否在解析时立即apply
      */

@@ -24,7 +24,6 @@ import com.magic.multi.theme.core.exception.SkinLoadException
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.NULL_SKIN_PATH_EXCEPTION
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_FILE_NOT_EXISTS
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_GET_NULL_RESOURCES
-import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_RELEASE_ASSETS_FILE_FAILED
 import com.magic.multi.theme.core.factory.MultiThemeFactory
 import com.magic.multi.theme.core.strategy.IThemeLoadStrategy
 import com.magic.multi.theme.core.utils.AttrConfig
@@ -181,23 +180,13 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
 
     @SuppressLint("RestrictedApi")
     override fun loadThemeByStrategy(strategy: IThemeLoadStrategy, iLoadListener: ILoadListener?) {
-        ArchTaskExecutor.getIOThreadExecutor().execute {
-            this.mStrategy = strategy
-            val filePath = strategy.getOrGenerateThemePackage(this.app)
-            if (filePath.isNullOrEmpty()) {
+        ArchTaskExecutor.getIOThreadExecutor().execute{
+            val filePath  = strategy.getOrGenerateThemePackage(this.app)
+            if(filePath.isNullOrEmpty()){
                 iLoadListener?.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
-                return@execute
-            } else {
-                val releaseAssetsResult =
-                    strategy.releaseOriginFile2Assets(strategy.themeName, filePath)
-                if (releaseAssetsResult) {
-                    loadSkin(filePath, iLoadListener)
-                } else {
-                    iLoadListener?.onFailed(SkinLoadException(SKIN_RELEASE_ASSETS_FILE_FAILED))
-                    return@execute
-                }
+            }else{
+                loadSkin(filePath,iLoadListener)
             }
-
         }
     }
 

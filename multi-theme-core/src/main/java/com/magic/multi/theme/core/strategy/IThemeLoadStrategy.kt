@@ -16,9 +16,4 @@ interface IThemeLoadStrategy {
      * 获取/生成主题包
      */
     fun getOrGenerateThemePackage(context: Context): String?
-
-    /**
-     * 将沙盒里主题包中的原始文件释放到assets中 themeName/subDir，如无需求直接返回true
-     */
-    fun releaseOriginFile2Assets(subDir: String, themeCachePath: String): Boolean
 }

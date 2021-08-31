@@ -26,7 +26,7 @@ internal object AttrConfig {
      * @param attrValueRefId 属性值
      * @param attrValueRefName 属性值名称
      * @param typeName 属性值类型
-     * @param fileName assets里的文件名称
+     * @param attrAssetsValue assets里的文件名称
      * @return 属性实例对象
      */
     fun get(
@@ -34,7 +34,7 @@ internal object AttrConfig {
         attrValueRefId: Int,
         attrValueRefName: String?,
         typeName: String?,
-        fileName: String? = null
+        attrAssetsValue: String? = null
     ): BaseAttr? {
         //读取外部设置的属性
         if (externalAttrMap.keys.contains(attrName)) {
@@ -44,7 +44,7 @@ internal object AttrConfig {
             mExternalSkinAttrObj?.attrValue = attrValueRefId
             mExternalSkinAttrObj?.entryName = attrValueRefName
             mExternalSkinAttrObj?.entryType = typeName
-            mExternalSkinAttrObj?.fileName = fileName
+            mExternalSkinAttrObj?.attrAssetsValue = attrAssetsValue
             return mExternalSkinAttrObj
         }
         val mSkinAttr: BaseAttr = when (attrName) {
@@ -68,7 +68,7 @@ internal object AttrConfig {
         mSkinAttr.attrValue = attrValueRefId
         mSkinAttr.entryName = attrValueRefName
         mSkinAttr.entryType = typeName
-        mSkinAttr.fileName = fileName
+        mSkinAttr.attrAssetsValue = attrAssetsValue
         return mSkinAttr
     }
 
