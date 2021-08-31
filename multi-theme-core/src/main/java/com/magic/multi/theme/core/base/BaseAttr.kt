@@ -26,7 +26,11 @@ abstract class BaseAttr {
      * xml里某个属性值的类型
      */
     var entryType: String? = null
-
+    /**
+     * file name
+     * assets 里的文件名称
+     */
+    var fileName: String?  = null
     /**
      * 是否在解析时立即apply
      */

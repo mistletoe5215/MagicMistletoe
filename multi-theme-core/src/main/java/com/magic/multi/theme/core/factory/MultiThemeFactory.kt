@@ -78,17 +78,30 @@ class MultiThemeFactory : LayoutInflater.Factory {
             if (!AttrConfig.isSupportedAttr(attrName)) {
                 continue
             }
-            if (attrValue.startsWith("@")) {
-                try {
-                    val id = attrValue.substring(1).toInt()
-                    val entryName = context.resources.getResourceEntryName(id)
-                    val typeName = context.resources.getResourceTypeName(id)
-                    val mSkinAttr = AttrConfig.get(attrName, id, entryName, typeName)
-                    mSkinAttr?.let {
-                        viewAttrs.add(it)
+            when {
+                attrValue.startsWith("@") -> {
+                    try {
+                        val id = attrValue.substring(1).toInt()
+                        val entryName = context.resources.getResourceEntryName(id)
+                        val typeName = context.resources.getResourceTypeName(id)
+                        val mSkinAttr = AttrConfig.get(attrName, id, entryName, typeName)
+                        mSkinAttr?.let {
+                            viewAttrs.add(it)
+                        }
+                    } catch (e: Exception) {
+                        Log.e(MULTI_THEME_TAG, e.message.toString())
                     }
-                } catch (e: Exception) {
-                    Log.e(MULTI_THEME_TAG, e.message.toString())
+                }
+                //try to get file path from assets
+                else -> {
+                    try {
+                        val mSkinAttr = AttrConfig.get(attrName, 0, "", "", attrValue)
+                        mSkinAttr?.let {
+                            viewAttrs.add(it)
+                        }
+                    } catch (e: Exception) {
+                        Log.e(MULTI_THEME_TAG, e.message.toString())
+                    }
                 }
             }
         }
@@ -101,14 +114,15 @@ class MultiThemeFactory : LayoutInflater.Factory {
                 skinView.apply()
             }
             //如果含有立即apply的属性，则在解析时立即执行它的apply
-            if(skinView.attrs.any { it.applyImmediate }){
-                val immediateAttrs = skinView.attrs.filter{ it.applyImmediate }
+            if (skinView.attrs.any { it.applyImmediate }) {
+                val immediateAttrs = skinView.attrs.filter { it.applyImmediate }
                 immediateAttrs.forEach {
                     it.apply(skinView.view)
                 }
             }
         }
     }
+
     fun applyTheme() {
         for (skinView in mSkinViews) {
             if (null != skinView.view) {
