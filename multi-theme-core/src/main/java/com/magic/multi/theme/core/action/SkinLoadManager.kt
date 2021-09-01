@@ -181,6 +181,7 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
     @SuppressLint("RestrictedApi")
     override fun loadThemeByStrategy(strategy: IThemeLoadStrategy, iLoadListener: ILoadListener?) {
         ArchTaskExecutor.getIOThreadExecutor().execute{
+            this.mStrategy = strategy
             val filePath  = strategy.getOrGenerateThemePackage(this.app)
             if(filePath.isNullOrEmpty()){
                 iLoadListener?.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))

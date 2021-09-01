@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RestrictTo
 import com.magic.multi.theme.core.action.SkinLoadManager
+import com.magic.multi.theme.core.annotation.UpdateTheme
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.constants.SkinConfig
 import com.magic.multi.theme.core.constants.SkinConfig.MULTI_THEME_TAG
@@ -21,6 +22,7 @@ import com.magic.multi.theme.core.utils.InvokeUtil
  **/
 class MultiThemeFactory : LayoutInflater.Factory {
     private val mSkinViews: MutableList<SkinView> = mutableListOf()
+    private val mViewImplList: MutableList<View> = mutableListOf()
     override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
         var view: View? = null
         val skinEnable = attrs.getAttributeBooleanValue(
@@ -30,7 +32,10 @@ class MultiThemeFactory : LayoutInflater.Factory {
         )
         if (skinEnable) {
             view = createView(context, name, attrs)
-            view?.let { parseSkinAttr(context, attrs, it) }
+            view?.let {
+                parseSkinAttr(context, attrs, it)
+                mViewImplList.add(it)
+            }
         }
         return view
     }
@@ -124,9 +129,21 @@ class MultiThemeFactory : LayoutInflater.Factory {
     }
 
     fun applyTheme() {
-        for (skinView in mSkinViews) {
-            if (null != skinView.view) {
+        mSkinViews.forEach { skinView ->
+            skinView.view?.let {
                 skinView.apply()
+            }
+        }
+        //execute Custom Theme View's function that contain updateTheme annotation
+        mViewImplList.forEach { viewImpl ->
+            val clazz = viewImpl::class.java
+            val methods = clazz.declaredMethods
+            val updateThemeMethod =
+                methods.find { method -> method.getAnnotation(UpdateTheme::class.java) != null }
+            updateThemeMethod?.let {
+                safeBlock {
+                    it.invoke(viewImpl)
+                }
             }
         }
     }
@@ -141,6 +158,14 @@ class MultiThemeFactory : LayoutInflater.Factory {
                 continue
             }
             skinView.clean()
+        }
+    }
+
+    private inline fun safeBlock(block: () -> Unit) {
+        try {
+            block.invoke()
+        } catch (e: Exception) {
+            Log.e(MULTI_THEME_TAG, e.message.toString())
         }
     }
 }
