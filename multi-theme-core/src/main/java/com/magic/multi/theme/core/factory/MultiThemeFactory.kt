@@ -98,15 +98,19 @@ class MultiThemeFactory : LayoutInflater.Factory {
                     }
                 }
                 //try to get file path from assets
-                else -> {
+                attrValue.startsWith("assets/") -> {
                     try {
-                        val mSkinAttr = AttrConfig.get(attrName, 0, "", "", attrValue)
+                        val assetsResourceValue = attrValue.replace("assets/", "")
+                        val mSkinAttr = AttrConfig.get(attrName, 0, "", "", assetsResourceValue)
                         mSkinAttr?.let {
                             viewAttrs.add(it)
                         }
                     } catch (e: Exception) {
                         Log.e(MULTI_THEME_TAG, e.message.toString())
                     }
+                }
+                else -> {
+                    // do nothing
                 }
             }
         }
