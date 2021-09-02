@@ -2,3 +2,4 @@ include ':theme-pkg'
 include ':multi-theme-core'
 include ':app'
 rootProject.name = "MagicMistletoe"
+include ':multi-theme-plugin'
