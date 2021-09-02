@@ -260,6 +260,7 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
      * @return 皮肤资源中的color.xml中对应的值
      */
     override fun getColor(resId: Int): Int {
+        Log.d("Mistletoe","SkinLoadManager getColor executed!!!")
         val originResources = app.resources
         val originColor = originResources.getColor(resId)
         if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
