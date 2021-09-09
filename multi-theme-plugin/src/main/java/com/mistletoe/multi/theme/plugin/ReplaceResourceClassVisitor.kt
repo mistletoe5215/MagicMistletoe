@@ -1,10 +1,7 @@
 package com.mistletoe.multi.theme.plugin
 
-import org.objectweb.asm.AnnotationVisitor
-import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.MethodVisitor
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.commons.AdviceAdapter
+import org.objectweb.asm.*
 
 /**
  * Created by mistletoe
@@ -20,20 +17,10 @@ class ReplaceResourceClassVisitor(private val className: String?, classVisitor: 
     }
 
     /**
-     * 父类名
-     */
-    private var superName: String? = null
-
-    /**
-     * 该类实现的接口
-     */
-    private lateinit var interfaces: Array<String>
-
-    /**
      * ASM进入到类的方法时进行回调
      *
      * @param access
-     * @param name       方法名
+     * @param name
      * @param desc
      * @param signature
      * @param exceptions
@@ -51,6 +38,9 @@ class ReplaceResourceClassVisitor(private val className: String?, classVisitor: 
                     when (name) {
                         GET_DRAWABLE_METHOD_NAME -> {
                             println("meeting target  getDrawable function")
+                            val label0 = Label()
+                            mv.visitLabel(label0)
+                            mv.visitLineNumber(455, label0)
                             mv.visitFieldInsn(
                                 GETSTATIC,
                                 "com/magic/multi/theme/core/action/SkinLoadManager",
@@ -64,21 +54,36 @@ class ReplaceResourceClassVisitor(private val className: String?, classVisitor: 
                                 "()Lcom/magic/multi/theme/core/action/SkinLoadManager;",
                                 false
                             )
+                            mv.visitVarInsn(ALOAD, 0)
                             mv.visitVarInsn(ILOAD, 1)
                             mv.visitMethodInsn(
                                 INVOKEVIRTUAL,
                                 "com/magic/multi/theme/core/action/SkinLoadManager",
                                 "getDrawable",
-                                "(I)Landroid/graphics/drawable/Drawable;",
+                                "(Landroid/content/Context;I)Landroid/graphics/drawable/Drawable;",
                                 false
                             )
                             mv.visitInsn(ARETURN)
-                            mv.visitMaxs(2, 2)
+                            val label1 = Label()
+                            mv.visitLabel(label1)
+                            mv.visitLocalVariable(
+                                "context",
+                                "Landroid/content/Context;",
+                                null,
+                                label0,
+                                label1,
+                                0
+                            )
+                            mv.visitLocalVariable("id", "I", null, label0, label1, 1)
+                            mv.visitMaxs(3, 2)
                             mv.visitEnd()
                             println("meeting target  getDrawable function,replace finished")
                         }
                         GET_COLOR_METHOD_NAME -> {
                             println("meeting target  getColor function")
+                            val label0 = Label()
+                            mv.visitLabel(label0)
+                            mv.visitLineNumber(515, label0)
                             mv.visitFieldInsn(
                                 GETSTATIC,
                                 "com/magic/multi/theme/core/action/SkinLoadManager",
@@ -92,16 +97,28 @@ class ReplaceResourceClassVisitor(private val className: String?, classVisitor: 
                                 "()Lcom/magic/multi/theme/core/action/SkinLoadManager;",
                                 false
                             )
+                            mv.visitVarInsn(ALOAD, 0)
                             mv.visitVarInsn(ILOAD, 1)
                             mv.visitMethodInsn(
                                 INVOKEVIRTUAL,
                                 "com/magic/multi/theme/core/action/SkinLoadManager",
                                 "getColor",
-                                "(I)I",
+                                "(Landroid/content/Context;I)I",
                                 false
                             )
                             mv.visitInsn(IRETURN)
-                            mv.visitMaxs(2, 2)
+                            val label1 = Label()
+                            mv.visitLabel(label1)
+                            mv.visitLocalVariable(
+                                "context",
+                                "Landroid/content/Context;",
+                                null,
+                                label0,
+                                label1,
+                                0
+                            )
+                            mv.visitLocalVariable("id", "I", null, label0, label1, 1)
+                            mv.visitMaxs(3, 2)
                             mv.visitEnd()
                             println("meeting target  getColor function,replace finished")
                         }
@@ -115,34 +132,16 @@ class ReplaceResourceClassVisitor(private val className: String?, classVisitor: 
                     return super.visitAnnotation(desc, visible)
                 }
 
-                override fun visitFieldInsn(opcode: Int, owner: String, name: String, desc: String) {
+                override fun visitFieldInsn(
+                    opcode: Int,
+                    owner: String,
+                    name: String,
+                    desc: String
+                ) {
                     super.visitFieldInsn(opcode, owner, name, desc)
                 }
             }
         }
         return mv
-    }
-
-    /**
-     * 当ASM进入类时回调
-     *
-     * @param version
-     * @param access
-     * @param name       类名
-     * @param signature
-     * @param superName  父类名
-     * @param interfaces 实现的接口名
-     */
-    override fun visit(
-        version: Int,
-        access: Int,
-        name: String,
-        signature: String?,
-        superName: String,
-        interfaces: Array<String>
-    ) {
-        super.visit(version, access, name, signature, superName, interfaces)
-        this.superName = superName
-        this.interfaces = interfaces
     }
 }
