@@ -2,7 +2,6 @@ package com.magic.multi.theme.core.action
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.content.res.Resources
@@ -217,32 +216,30 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
      * @param resId 资源Id
      * @return 图片drawable对象
      */
-    override fun getDrawable(context: Context,resId: Int): Drawable {
-        Log.d(MULTI_THEME_TAG,"SkinLoadManager getDrawable executed!!!")
+    override fun getDrawable(resId: Int): Drawable {
         val originResources = app.resources
-        val originDrawable = originResources.getDrawable(resId,null)
+        val originDrawable = originResources.getDrawable(resId)
         if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
             return originDrawable
         }
         //这里决定了换肤文件中的资源命名需要和宿主app资源命名相同
         val entryName = originResources.getResourceEntryName(resId)
         val resourceId = mResource!!.getIdentifier(entryName, "drawable", mSkinPkgName)
-        return try {
-            mResource!!.getDrawable(resourceId,null)
+        try {
+            return mResource!!.getDrawable(resourceId)
         } catch (e: Exception) {
-            Log.d(MULTI_THEME_TAG,"can't find drawable with resId:${resId}")
-            originDrawable
+            // do nothing
         }
+        return originDrawable
     }
 
     /**
      * 根据字符串资源Id索引皮肤资源中的strings.xml中的值
-     * @param context 当前上下文
      * @param resId 字符串资源Id
      * @return strings.xml中对应的值
      */
-    override fun getTextString(context: Context,resId: Int): String {
-        val originResources = context.resources
+    override fun getTextString(resId: Int): String {
+        val originResources = app.resources
         val originText = originResources.getString(resId)
         if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
             return originText
@@ -253,30 +250,27 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         return try {
             mResource!!.getString(resourceId)
         } catch (e: Exception) {
-            Log.d(MULTI_THEME_TAG,"can't find text string with resId:${resId}")
             originText
         }
     }
 
     /**
      * 根据颜色的资源id索引皮肤资源中的color.xml中的值
-     * @param context 当前上下文
      * @param resId 颜色的资源id
      * @return 皮肤资源中的color.xml中对应的值
      */
-    override fun getColor(context: Context, resId: Int): Int {
-        Log.d(MULTI_THEME_TAG,"SkinLoadManager getColor executed!!!")
-        val originResources = context.resources
-        val originColor = originResources.getColor(resId,null)
+    override fun getColor(resId: Int): Int {
+        Log.d("Mistletoe","SkinLoadManager getColor executed!!!")
+        val originResources = app.resources
+        val originColor = originResources.getColor(resId)
         if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
             return originColor
         }
         val entryName = originResources.getResourceEntryName(resId)
         val resourceId = mResource!!.getIdentifier(entryName, "color", mSkinPkgName)
         return try {
-            return mResource!!.getColor(resourceId,null)
+            return mResource!!.getColor(resourceId)
         } catch (e: Exception) {
-            Log.d(MULTI_THEME_TAG,"can't find color with resId:${resId}")
             originColor
         }
     }

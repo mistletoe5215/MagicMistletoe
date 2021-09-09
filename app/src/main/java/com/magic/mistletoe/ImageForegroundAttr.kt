@@ -15,12 +15,12 @@ class ImageForegroundAttr:BaseAttr() {
        when(view){
            is AppCompatImageView ->{
                if ("foreground".equals(attrName, true)) {
-                   view.foreground = SkinLoadManager.getInstance().getDrawable(view.context,attrValue)
+                   view.foreground = SkinLoadManager.getInstance().getDrawable(attrValue)
                }
            }
            is ImageView ->{
                if ("foreground".equals(attrName, true)) {
-                   view.foreground = SkinLoadManager.getInstance().getDrawable(view.context,attrValue)
+                   view.foreground = SkinLoadManager.getInstance().getDrawable(attrValue)
                }
            }
        }

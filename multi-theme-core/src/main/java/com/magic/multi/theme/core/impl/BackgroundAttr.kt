@@ -16,16 +16,10 @@ internal class BackgroundAttr : BaseAttr() {
     override fun apply(view: View?) {
         when (entryType) {
             BACKGROUND_COLOR -> {
-                view?.let {
-                    it.setBackgroundColor(
-                        SkinLoadManager.getInstance().getColor(it.context, attrValue)
-                    )
-                }
+                view?.setBackgroundColor(SkinLoadManager.getInstance().getColor(attrValue))
             }
             BACKGROUND_DRAWABLE -> {
-                view?.let {
-                    it.background = SkinLoadManager.getInstance().getDrawable(it.context, attrValue)
-                }
+                view?.background = SkinLoadManager.getInstance().getDrawable(attrValue)
             }
             else -> {
                 Log.e(MULTI_THEME_TAG, "no match entryType")

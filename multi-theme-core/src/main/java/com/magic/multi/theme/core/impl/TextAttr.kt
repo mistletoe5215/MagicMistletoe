@@ -18,12 +18,12 @@ internal class TextAttr : BaseAttr() {
         when (view) {
             is TextView -> {
                 if (AttrConstants.TEXT_VALUE.equals(attrName, true)) {
-                    view.text = SkinLoadManager.getInstance().getTextString(view.context, attrValue)
+                    view.text = SkinLoadManager.getInstance().getTextString(attrValue)
                 }
             }
             is AppCompatTextView -> {
                 if (AttrConstants.TEXT_VALUE.equals(attrName, true)) {
-                    view.text = SkinLoadManager.getInstance().getTextString(view.context, attrValue)
+                    view.text = SkinLoadManager.getInstance().getTextString(attrValue)
                 }
             }
             else -> {
