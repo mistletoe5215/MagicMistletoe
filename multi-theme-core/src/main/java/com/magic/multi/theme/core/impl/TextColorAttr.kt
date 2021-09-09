@@ -16,12 +16,16 @@ internal class TextColorAttr : BaseAttr() {
         when (view) {
             is TextView -> {
                 if (AttrConstants.TEXT_COLOR.equals(attrName, true)) {
-                    view.setTextColor(SkinLoadManager.getInstance().getColor(attrValue))
+                    view.setTextColor(
+                        SkinLoadManager.getInstance().getColor(view.context, attrValue)
+                    )
                 }
             }
             is AppCompatTextView -> {
                 if (AttrConstants.TEXT_COLOR.equals(attrName, true)) {
-                    view.setTextColor(SkinLoadManager.getInstance().getColor(attrValue))
+                    view.setTextColor(
+                        SkinLoadManager.getInstance().getColor(view.context, attrValue)
+                    )
                 }
             }
         }

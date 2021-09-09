@@ -18,12 +18,17 @@ internal class ImageAttr : BaseAttr() {
         when (view) {
             is ImageView -> {
                 if (IMAGE_SRC.equals(attrName, true)) {
-                    view.setImageDrawable(SkinLoadManager.getInstance().getDrawable(attrValue))
+
+                    view.setImageDrawable(
+                        SkinLoadManager.getInstance().getDrawable(view.context, attrValue)
+                    )
                 }
             }
             is AppCompatImageView -> {
                 if (IMAGE_SRC.equals(attrName, true)) {
-                    view.setImageDrawable(SkinLoadManager.getInstance().getDrawable(attrValue))
+                    view.setImageDrawable(
+                        SkinLoadManager.getInstance().getDrawable(view.context, attrValue)
+                    )
                 }
             }
             else -> {
