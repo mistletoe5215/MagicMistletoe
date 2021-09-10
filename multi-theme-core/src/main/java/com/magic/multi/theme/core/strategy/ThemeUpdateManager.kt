@@ -8,7 +8,7 @@ object ThemeUpdateManager {
     private var mDelegateMap: MutableMap<IThemeLoadStrategy, IThemeUpdateChecker> = mutableMapOf()
 
     @Synchronized
-    fun addStrategyDelegates(vararg strategyDelegates: Pair<IThemeLoadStrategy, IThemeUpdateChecker>) {
+    fun registerUpdateCheckDelegates(vararg strategyDelegates: Pair<IThemeLoadStrategy, IThemeUpdateChecker>) {
         strategyDelegates.forEach {
             val (strategy, checker) = it
             mDelegateMap[strategy] = checker
