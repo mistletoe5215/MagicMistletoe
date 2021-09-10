@@ -3,6 +3,7 @@ package com.magic.multi.theme.core.api
 import android.app.Application
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleOwner
 import com.magic.multi.theme.core.annotation.CalledAfterSetThemeFactory
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.strategy.IThemeLoadStrategy
@@ -38,8 +39,10 @@ interface IOperationHandler {
      * @param attrMap 自定义属性映射
      */
     fun configCustomAttrs(attrMap: MutableMap<String, Class<out BaseAttr>>)
-
-
+    /**
+     * 外部添加主题加载状态监听
+     */
+    fun addExtraLoadListener(lifecycleOwner: LifecycleOwner,loadListener:ILoadListener)
     /**
      * 清空当前缓存视图集
      */

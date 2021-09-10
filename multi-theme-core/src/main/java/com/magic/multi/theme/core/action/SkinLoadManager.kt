@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.magic.multi.theme.core.annotation.CalledAfterSetThemeFactory
 import com.magic.multi.theme.core.api.ILoadListener
@@ -93,6 +94,11 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
     private var mStrategy: IThemeLoadStrategy? = null
 
     /**
+     * 外部设置的主题包更新状态监听list
+     */
+    private var mOuterLoadListener: MutableList<ILoadListener> = mutableListOf()
+
+    /**
      * 初始化
      */
     override fun init(app: Application) {
@@ -109,10 +115,16 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         mScope.launch {
             Log.i(MULTI_THEME_TAG, "begin load skin resource")
             iLoadListener?.onStart()
+            mOuterLoadListener.forEach {
+                it.onStart()
+            }
             mSkinFilePath?.let {
                 val file = File(mSkinFilePath)
                 if (!file.exists()) {
                     iLoadListener?.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
+                    mOuterLoadListener.forEach {
+                        it.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
+                    }
                     return@launch
                 }
                 val resourcesDeferred = async(Dispatchers.IO) {
@@ -145,13 +157,22 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
                 resources?.let { res ->
                     mResource = res
                     iLoadListener?.onSuccess()
+                    mOuterLoadListener.forEach {
+                        it.onSuccess()
+                    }
                 } ?: run {
                     isDefaultSkin = true
                     iLoadListener?.onFailed(SkinLoadException(SKIN_GET_NULL_RESOURCES))
+                    mOuterLoadListener.forEach {
+                        it.onFailed(SkinLoadException(SKIN_GET_NULL_RESOURCES))
+                    }
                 }
 
             } ?: run {
                 iLoadListener?.onFailed(SkinLoadException(SKIN_FILE_NOT_EXISTS))
+                mOuterLoadListener.forEach {
+                    it.onFailed(SkinLoadException(SKIN_FILE_NOT_EXISTS))
+                }
             }
         }
     }
@@ -180,13 +201,13 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
 
     @SuppressLint("RestrictedApi")
     override fun loadThemeByStrategy(strategy: IThemeLoadStrategy, iLoadListener: ILoadListener?) {
-        ArchTaskExecutor.getIOThreadExecutor().execute{
+        ArchTaskExecutor.getIOThreadExecutor().execute {
             this.mStrategy = strategy
-            val filePath  = strategy.getOrGenerateThemePackage(this.app)
-            if(filePath.isNullOrEmpty()){
+            val filePath = strategy.getOrGenerateThemePackage(this.app)
+            if (filePath.isNullOrEmpty()) {
                 iLoadListener?.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
-            }else{
-                loadSkin(filePath,iLoadListener)
+            } else {
+                loadSkin(filePath, iLoadListener)
             }
         }
     }
@@ -207,6 +228,18 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         AttrConstants.attrConstantList.addAll(attrMap.keys)
     }
 
+    override fun addExtraLoadListener(lifecycleOwner: LifecycleOwner, loadListener: ILoadListener) {
+        synchronized(mOuterLoadListener) {
+            mOuterLoadListener.add(loadListener)
+        }
+        lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun onDestroy() {
+                mOuterLoadListener.remove(loadListener)
+            }
+        })
+    }
+
     override fun clean() {
         mPageFactoryMap.clear()
     }
@@ -216,21 +249,22 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
      * @param resId 资源Id
      * @return 图片drawable对象
      */
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun getDrawable(resId: Int): Drawable {
         val originResources = app.resources
-        val originDrawable = originResources.getDrawable(resId)
+        val originDrawable = originResources.getDrawable(resId,null)
         if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
             return originDrawable
         }
         //这里决定了换肤文件中的资源命名需要和宿主app资源命名相同
         val entryName = originResources.getResourceEntryName(resId)
         val resourceId = mResource!!.getIdentifier(entryName, "drawable", mSkinPkgName)
-        try {
-            return mResource!!.getDrawable(resourceId)
+        return try {
+             mResource!!.getDrawable(resourceId,null)
         } catch (e: Exception) {
-            // do nothing
+            Log.d(MULTI_THEME_TAG, "get theme drawable  failed with resId:${resId},use origin drawable")
+            originDrawable
         }
-        return originDrawable
     }
 
     /**
@@ -250,6 +284,7 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         return try {
             mResource!!.getString(resourceId)
         } catch (e: Exception) {
+            Log.d(MULTI_THEME_TAG, "get theme text string  failed with resId:${resId},use origin text string")
             originText
         }
     }
@@ -260,17 +295,18 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
      * @return 皮肤资源中的color.xml中对应的值
      */
     override fun getColor(resId: Int): Int {
-        Log.d("Mistletoe","SkinLoadManager getColor executed!!!")
+        Log.d(MULTI_THEME_TAG, "SkinLoadManager getColor executed!!!")
         val originResources = app.resources
-        val originColor = originResources.getColor(resId)
+        val originColor = originResources.getColor(resId,null)
         if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
             return originColor
         }
         val entryName = originResources.getResourceEntryName(resId)
         val resourceId = mResource!!.getIdentifier(entryName, "color", mSkinPkgName)
         return try {
-            return mResource!!.getColor(resourceId)
+            return mResource!!.getColor(resourceId,null)
         } catch (e: Exception) {
+            Log.d(MULTI_THEME_TAG, "get theme color  failed with resId:${resId},use origin color")
             originColor
         }
     }
