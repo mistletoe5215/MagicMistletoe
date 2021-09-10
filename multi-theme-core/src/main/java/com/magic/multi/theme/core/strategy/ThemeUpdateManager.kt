@@ -1,22 +1,24 @@
 package com.magic.multi.theme.core.strategy
 
+import androidx.annotation.StringRes
+
 /**
  * Created by mistletoe
  * on 2021/9/10
  **/
 object ThemeUpdateManager {
-    private var mCheckerMap: MutableMap<IThemeLoadStrategy, IThemeUpdateChecker> = mutableMapOf()
+    private var mCheckerMap: MutableMap<String, IThemeUpdateChecker> = mutableMapOf()
 
     @Synchronized
-    fun registerUpdateCheckers(vararg strategyCheckers: Pair<IThemeLoadStrategy, IThemeUpdateChecker>) {
+    fun registerUpdateCheckers(vararg strategyCheckers: Pair<String, IThemeUpdateChecker>) {
         strategyCheckers.forEach {
-            val (strategy, checker) = it
-            mCheckerMap[strategy] = checker
+            val (themeName, checker) = it
+            mCheckerMap[themeName] = checker
         }
     }
 
     @Synchronized
-    fun getChecker(strategy: IThemeLoadStrategy): IThemeUpdateChecker? {
-        return mCheckerMap[strategy]
+    fun getChecker(themeName: String): IThemeUpdateChecker? {
+        return mCheckerMap[themeName]
     }
 }
