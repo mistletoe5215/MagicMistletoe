@@ -52,7 +52,12 @@ class MultiThemeFactory : LayoutInflater.Factory {
         var mName = name
         try {
             if (-1 == name.indexOf('.')) {
-                mName = "android.widget.$name"
+                //又是一个小细节
+                mName = if (name == "View") {
+                    "android.view.$name"
+                } else {
+                    "android.widget.$name"
+                }
             }
             view = InvokeUtil.createView(mName, context, attrs) as? View
             Log.i(MULTI_THEME_TAG, "$mName transfer succeed!")
