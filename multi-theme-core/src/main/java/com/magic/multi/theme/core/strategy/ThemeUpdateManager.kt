@@ -5,18 +5,18 @@ package com.magic.multi.theme.core.strategy
  * on 2021/9/10
  **/
 object ThemeUpdateManager {
-    private var mDelegateMap: MutableMap<IThemeLoadStrategy, IThemeUpdateChecker> = mutableMapOf()
+    private var mCheckerMap: MutableMap<IThemeLoadStrategy, IThemeUpdateChecker> = mutableMapOf()
 
     @Synchronized
-    fun registerUpdateCheckDelegates(vararg strategyDelegates: Pair<IThemeLoadStrategy, IThemeUpdateChecker>) {
-        strategyDelegates.forEach {
+    fun registerUpdateCheckers(vararg strategyCheckers: Pair<IThemeLoadStrategy, IThemeUpdateChecker>) {
+        strategyCheckers.forEach {
             val (strategy, checker) = it
-            mDelegateMap[strategy] = checker
+            mCheckerMap[strategy] = checker
         }
     }
 
     @Synchronized
     fun getChecker(strategy: IThemeLoadStrategy): IThemeUpdateChecker? {
-        return mDelegateMap[strategy]
+        return mCheckerMap[strategy]
     }
 }
