@@ -21,4 +21,9 @@ object ThemeUpdateManager {
     fun getChecker(themeName: String): IThemeUpdateChecker? {
         return mCheckerMap[themeName]
     }
+
+    @Synchronized
+    fun clean(){
+        mCheckerMap.clear()
+    }
 }
