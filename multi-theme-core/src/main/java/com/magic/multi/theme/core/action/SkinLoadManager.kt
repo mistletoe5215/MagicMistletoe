@@ -184,6 +184,9 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         isDefaultSkin = true
         mResource = app.resources
         applyTheme()
+        mOuterLoadListener.forEach {
+            it.onSuccess()
+        }
     }
 
     @CalledAfterSetThemeFactory
