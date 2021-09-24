@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
+import android.content.res.ColorStateList
 import android.content.res.Resources
+import android.content.res.Resources.NotFoundException
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.util.Log
@@ -255,7 +257,7 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun getDrawable(resId: Int): Drawable {
         val originResources = app.resources
-        val originDrawable = originResources.getDrawable(resId,null)
+        val originDrawable = originResources.getDrawable(resId, null)
         if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
             return originDrawable
         }
@@ -263,9 +265,12 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         val entryName = originResources.getResourceEntryName(resId)
         val resourceId = mResource!!.getIdentifier(entryName, "drawable", mSkinPkgName)
         return try {
-             mResource!!.getDrawable(resourceId,null)
+            mResource!!.getDrawable(resourceId, null)
         } catch (e: Exception) {
-            Log.d(MULTI_THEME_TAG, "get theme drawable  failed with resId:${resId},use origin drawable")
+            Log.d(
+                MULTI_THEME_TAG,
+                "get theme drawable  failed with resId:${resId},use origin drawable"
+            )
             originDrawable
         }
     }
@@ -287,7 +292,10 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         return try {
             mResource!!.getString(resourceId)
         } catch (e: Exception) {
-            Log.d(MULTI_THEME_TAG, "get theme text string  failed with resId:${resId},use origin text string")
+            Log.d(
+                MULTI_THEME_TAG,
+                "get theme text string  failed with resId:${resId},use origin text string"
+            )
             originText
         }
     }
@@ -300,18 +308,52 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
     override fun getColor(resId: Int): Int {
         Log.d(MULTI_THEME_TAG, "SkinLoadManager getColor executed!!!")
         val originResources = app.resources
-        val originColor = originResources.getColor(resId,null)
+        val originColor = originResources.getColor(resId, null)
         if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
             return originColor
         }
         val entryName = originResources.getResourceEntryName(resId)
         val resourceId = mResource!!.getIdentifier(entryName, "color", mSkinPkgName)
         return try {
-            return mResource!!.getColor(resourceId,null)
+            return mResource!!.getColor(resourceId, null)
         } catch (e: Exception) {
             Log.d(MULTI_THEME_TAG, "get theme color  failed with resId:${resId},use origin color")
             originColor
         }
+    }
+
+    override fun getColorStateList(resId: Int): ColorStateList {
+        var isExtendSkin = true
+        if (mResource == null || isDefaultSkin) {
+            isExtendSkin = false
+        }
+        val resName: String = app.resources.getResourceEntryName(resId)
+        if (isExtendSkin) {
+            val skinResId = mResource!!.getIdentifier(resName, "color", mSkinPkgName)
+            val skinColorList: ColorStateList
+            if (skinResId == 0) {
+                try {
+                    return app.resources.getColorStateList(resId, null)
+                } catch (e: NotFoundException) {
+                    Log.e(MULTI_THEME_TAG, e.message.toString())
+                }
+            } else {
+                try {
+                    skinColorList = mResource!!.getColorStateList(skinResId, null)
+                    return skinColorList
+                } catch (e: NotFoundException) {
+                    Log.e(MULTI_THEME_TAG, e.message.toString())
+                }
+            }
+        } else {
+            try {
+                return app.resources.getColorStateList(resId, null)
+            } catch (e: NotFoundException) {
+                Log.e(MULTI_THEME_TAG, e.message.toString())
+            }
+        }
+        val states = Array(1) { IntArray(1) }
+        return ColorStateList(states, intArrayOf(app.resources.getColor(resId, null)))
     }
 
     override fun getAssetsFilePath(fileName: String): String {

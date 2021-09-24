@@ -2,4 +2,6 @@
 <resources>
     <color name="main_bg">#FF000000</color>
     <color name="main_text">#FFFFFFFF</color>
+    <color name="dominantStatus">#657EF8</color>
+    <color name="quaternaryText">#40434C</color>
 </resources>

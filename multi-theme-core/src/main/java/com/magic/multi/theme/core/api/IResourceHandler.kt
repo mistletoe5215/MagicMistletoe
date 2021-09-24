@@ -1,5 +1,6 @@
 package com.magic.multi.theme.core.api
 
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 
 /**
@@ -10,5 +11,6 @@ interface IResourceHandler {
     fun getDrawable(resId: Int): Drawable
     fun getTextString(resId: Int): String
     fun getColor(resId: Int): Int
+    fun getColorStateList(resId: Int): ColorStateList
     fun getAssetsFilePath(fileName:String):String
 }

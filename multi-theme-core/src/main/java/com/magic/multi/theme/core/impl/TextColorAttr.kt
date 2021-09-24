@@ -2,7 +2,6 @@ package com.magic.multi.theme.core.impl
 
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatTextView
 import com.magic.multi.theme.core.action.SkinLoadManager
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.constants.AttrConstants
@@ -16,12 +15,7 @@ internal class TextColorAttr : BaseAttr() {
         when (view) {
             is TextView -> {
                 if (AttrConstants.TEXT_COLOR.equals(attrName, true)) {
-                    view.setTextColor(SkinLoadManager.getInstance().getColor(attrValue))
-                }
-            }
-            is AppCompatTextView -> {
-                if (AttrConstants.TEXT_COLOR.equals(attrName, true)) {
-                    view.setTextColor(SkinLoadManager.getInstance().getColor(attrValue))
+                    view.setTextColor(SkinLoadManager.getInstance().getColorStateList(attrValue))
                 }
             }
         }

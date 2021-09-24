@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="main_bg">#FFFFFFFF</color>
     <color name="main_text">#FF000000</color>
+    <color name="dominantStatus">#657EF8</color>
+    <color name="quaternaryText">#DDE3EC</color>
 </resources>

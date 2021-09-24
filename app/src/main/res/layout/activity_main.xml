@@ -32,7 +32,7 @@
         android:gravity="center"
         android:id="@+id/jump"
         android:text="打开二级页面"
-        android:textColor="@color/main_text"
+        android:textColor="@color/text_color_selector_quaternary_dominant"
         multiTheme:enable="true"
         app:layout_constraintBottom_toTopOf="@+id/open_dialog"
         app:layout_constraintLeft_toLeftOf="parent"
