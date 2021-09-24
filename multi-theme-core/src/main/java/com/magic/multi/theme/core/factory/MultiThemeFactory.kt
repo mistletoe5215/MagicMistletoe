@@ -52,11 +52,11 @@ class MultiThemeFactory : LayoutInflater.Factory {
         var mName = name
         try {
             if (-1 == name.indexOf('.')) {
-                //又是一个小细节
-                mName = if (name == "View") {
-                    "android.view.$name"
-                } else {
-                    "android.widget.$name"
+                mName = when (name) {
+                    "View" -> "android.view.$name"
+                    "TextView", "ImageView", "Button", "EditText", "Spinner", "ImageButton", "CheckBox", "RadioButton", "CheckedTextView", "AutoCompleteTextView", "MultiAutoCompleteTextView", "RatingBar", "SeekBar"
+                    -> "androidx.appcompat.widget.AppCompat$name"
+                    else -> "android.widget.$name"
                 }
             }
             view = InvokeUtil.createView(mName, context, attrs) as? View
