@@ -5,6 +5,7 @@ import android.widget.TextView
 import com.magic.multi.theme.core.action.SkinLoadManager
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.constants.AttrConstants
+import com.magic.multi.theme.core.log.MultiThemeLog
 
 /**
  * Created by mistletoe
@@ -17,6 +18,9 @@ internal class TextColorAttr : BaseAttr() {
                 if (AttrConstants.TEXT_COLOR.equals(attrName, true)) {
                     view.setTextColor(SkinLoadManager.getInstance().getColorStateList(attrValue))
                 }
+            }
+            else -> {
+                MultiThemeLog.e("no match text view instance")
             }
         }
     }

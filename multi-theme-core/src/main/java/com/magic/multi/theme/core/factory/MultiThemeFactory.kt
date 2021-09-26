@@ -2,7 +2,6 @@ package com.magic.multi.theme.core.factory
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RestrictTo
@@ -10,8 +9,8 @@ import com.magic.multi.theme.core.action.SkinLoadManager
 import com.magic.multi.theme.core.annotation.UpdateTheme
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.constants.SkinConfig
-import com.magic.multi.theme.core.constants.SkinConfig.MULTI_THEME_TAG
 import com.magic.multi.theme.core.impl.SkinView
+import com.magic.multi.theme.core.log.MultiThemeLog
 import com.magic.multi.theme.core.utils.AttrConfig
 import com.magic.multi.theme.core.utils.InvokeUtil
 
@@ -23,6 +22,26 @@ import com.magic.multi.theme.core.utils.InvokeUtil
 class MultiThemeFactory : LayoutInflater.Factory {
     private val mSkinViews: MutableList<SkinView> = mutableListOf()
     private val mViewImplList: MutableList<View> = mutableListOf()
+
+    companion object {
+        val APP_COMPAT_WIDGET_NAME_LIST = listOf(
+            "TextView",
+            "ImageView",
+            "Button",
+            "EditText",
+            "Spinner",
+            "ImageButton",
+            "CheckBox",
+            "RadioButton",
+            "CheckedTextView",
+            "AutoCompleteTextView",
+            "MultiAutoCompleteTextView",
+            "RatingBar",
+            "SeekBar"
+        )
+        const val APP_COMPAT_PREFIX = "androidx.appcompat.widget.AppCompat"
+    }
+
     override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
         var view: View? = null
         val skinEnable = attrs.getAttributeBooleanValue(
@@ -54,21 +73,19 @@ class MultiThemeFactory : LayoutInflater.Factory {
             if (-1 == name.indexOf('.')) {
                 mName = when (name) {
                     "View" -> "android.view.$name"
-                    "TextView", "ImageView", "Button", "EditText", "Spinner", "ImageButton", "CheckBox", "RadioButton", "CheckedTextView", "AutoCompleteTextView", "MultiAutoCompleteTextView", "RatingBar", "SeekBar"
-                    -> "androidx.appcompat.widget.AppCompat$name"
+                    in APP_COMPAT_WIDGET_NAME_LIST -> APP_COMPAT_PREFIX + name
                     else -> "android.widget.$name"
                 }
             }
             view = InvokeUtil.createView(mName, context, attrs) as? View
-            Log.i(MULTI_THEME_TAG, "$mName transfer succeed!")
+            MultiThemeLog.i("$mName transfer succeed!")
         } catch (e: Exception) {
             for (i in 0 until attrs.attributeCount) {
-                Log.e(
-                    MULTI_THEME_TAG,
+                MultiThemeLog.e(
                     "${attrs.getAttributeName(i)}:${attrs.getAttributeValue(i)}".trimIndent()
                 )
             }
-            Log.e(MULTI_THEME_TAG, "$mName transfer failed!reason:" + e.message)
+            MultiThemeLog.e("$mName transfer failed!reason:" + e.message)
             view = null
         }
         return view
@@ -99,7 +116,7 @@ class MultiThemeFactory : LayoutInflater.Factory {
                             viewAttrs.add(it)
                         }
                     } catch (e: Exception) {
-                        Log.e(MULTI_THEME_TAG, e.message.toString())
+                        MultiThemeLog.e(e.message.toString())
                     }
                 }
                 //try to get file path from assets
@@ -111,7 +128,7 @@ class MultiThemeFactory : LayoutInflater.Factory {
                             viewAttrs.add(it)
                         }
                     } catch (e: Exception) {
-                        Log.e(MULTI_THEME_TAG, e.message.toString())
+                        MultiThemeLog.e(e.message.toString())
                     }
                 }
                 else -> {
@@ -174,7 +191,7 @@ class MultiThemeFactory : LayoutInflater.Factory {
         try {
             block.invoke()
         } catch (e: Exception) {
-            Log.e(MULTI_THEME_TAG, e.message.toString())
+            MultiThemeLog.e(e.message.toString())
         }
     }
 }

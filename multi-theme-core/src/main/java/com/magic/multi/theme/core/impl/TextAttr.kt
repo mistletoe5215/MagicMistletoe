@@ -1,13 +1,11 @@
 package com.magic.multi.theme.core.impl
 
-import android.util.Log
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatTextView
 import com.magic.multi.theme.core.action.SkinLoadManager
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.constants.AttrConstants
-import com.magic.multi.theme.core.constants.SkinConfig
+import com.magic.multi.theme.core.log.MultiThemeLog
 
 /**
  * Created by mistletoe
@@ -21,13 +19,8 @@ internal class TextAttr : BaseAttr() {
                     view.text = SkinLoadManager.getInstance().getTextString(attrValue)
                 }
             }
-            is AppCompatTextView -> {
-                if (AttrConstants.TEXT_VALUE.equals(attrName, true)) {
-                    view.text = SkinLoadManager.getInstance().getTextString(attrValue)
-                }
-            }
             else -> {
-                Log.e(SkinConfig.MULTI_THEME_TAG, "no match text view instance")
+                MultiThemeLog.e("no match text view instance")
             }
         }
     }

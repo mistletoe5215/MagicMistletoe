@@ -9,7 +9,6 @@ import android.content.res.Resources
 import android.content.res.Resources.NotFoundException
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.lifecycle.Lifecycle
@@ -22,12 +21,12 @@ import com.magic.multi.theme.core.api.IOperationHandler
 import com.magic.multi.theme.core.api.IResourceHandler
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.constants.AttrConstants
-import com.magic.multi.theme.core.constants.SkinConfig.MULTI_THEME_TAG
 import com.magic.multi.theme.core.exception.SkinLoadException
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.NULL_SKIN_PATH_EXCEPTION
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_FILE_NOT_EXISTS
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_GET_NULL_RESOURCES
 import com.magic.multi.theme.core.factory.MultiThemeFactory
+import com.magic.multi.theme.core.log.MultiThemeLog
 import com.magic.multi.theme.core.strategy.IThemeLoadStrategy
 import com.magic.multi.theme.core.utils.AttrConfig
 import kotlinx.coroutines.CoroutineScope
@@ -103,7 +102,8 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
     /**
      * 初始化
      */
-    override fun init(app: Application) {
+    override fun init(app: Application, enableDebug: Boolean) {
+        MultiThemeLog.enable(enableDebug)
         this.app = app
     }
 
@@ -115,7 +115,7 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
     @Suppress("ThrowableNotThrown")
     private fun loadSkin(mSkinFilePath: String?, iLoadListener: ILoadListener?) {
         mScope.launch {
-            Log.i(MULTI_THEME_TAG, "begin load skin resource")
+            MultiThemeLog.i("begin load skin resource")
             iLoadListener?.onStart()
             mOuterLoadListener.forEach {
                 it.onStart()
@@ -151,7 +151,7 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
                             previousRes.configuration
                         )
                     } catch (e: Exception) {
-                        Log.e(MULTI_THEME_TAG, e.message.toString())
+                        MultiThemeLog.e(e.message.toString())
                         null
                     }
                 }
@@ -267,8 +267,7 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         return try {
             mResource!!.getDrawable(resourceId, null)
         } catch (e: Exception) {
-            Log.d(
-                MULTI_THEME_TAG,
+            MultiThemeLog.d(
                 "get theme drawable  failed with resId:${resId},use origin drawable"
             )
             originDrawable
@@ -292,8 +291,7 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         return try {
             mResource!!.getString(resourceId)
         } catch (e: Exception) {
-            Log.d(
-                MULTI_THEME_TAG,
+            MultiThemeLog.d(
                 "get theme text string  failed with resId:${resId},use origin text string"
             )
             originText
@@ -306,7 +304,6 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
      * @return 皮肤资源中的color.xml中对应的值
      */
     override fun getColor(resId: Int): Int {
-        Log.d(MULTI_THEME_TAG, "SkinLoadManager getColor executed!!!")
         val originResources = app.resources
         val originColor = originResources.getColor(resId, null)
         if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
@@ -317,39 +314,38 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         return try {
             return mResource!!.getColor(resourceId, null)
         } catch (e: Exception) {
-            Log.d(MULTI_THEME_TAG, "get theme color  failed with resId:${resId},use origin color")
+            MultiThemeLog.d("get theme color  failed with resId:${resId},use origin color")
             originColor
         }
     }
 
+    /**
+     * 根据selector形式的颜色资源id索引皮肤资源中的color/xxx.xml文件的值
+     * @param resId 颜色的资源id
+     * @return ColorStateList 皮肤资源中的color/xxx.xml文件对应的ColorStateList对象
+     */
     override fun getColorStateList(resId: Int): ColorStateList {
-        var isExtendSkin = true
-        if (mResource == null || isDefaultSkin) {
-            isExtendSkin = false
-        }
-        val resName: String = app.resources.getResourceEntryName(resId)
-        if (isExtendSkin) {
-            val skinResId = mResource!!.getIdentifier(resName, "color", mSkinPkgName)
-            val skinColorList: ColorStateList
-            if (skinResId == 0) {
+        val entryName = app.resources.getResourceEntryName(resId)
+        if (isExternalSkin) {
+            val resourceId = mResource!!.getIdentifier(entryName, "color", mSkinPkgName)
+            if (resourceId == 0) {
                 try {
                     return app.resources.getColorStateList(resId, null)
                 } catch (e: NotFoundException) {
-                    Log.e(MULTI_THEME_TAG, e.message.toString())
+                    MultiThemeLog.e(e.message.toString())
                 }
             } else {
                 try {
-                    skinColorList = mResource!!.getColorStateList(skinResId, null)
-                    return skinColorList
+                    return mResource!!.getColorStateList(resourceId, null)
                 } catch (e: NotFoundException) {
-                    Log.e(MULTI_THEME_TAG, e.message.toString())
+                    MultiThemeLog.e(e.message.toString())
                 }
             }
         } else {
             try {
                 return app.resources.getColorStateList(resId, null)
             } catch (e: NotFoundException) {
-                Log.e(MULTI_THEME_TAG, e.message.toString())
+                MultiThemeLog.e(e.message.toString())
             }
         }
         val states = Array(1) { IntArray(1) }
@@ -359,5 +355,4 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
     override fun getAssetsFilePath(fileName: String): String {
         return this.mStrategy?.let { String.format("%s/%s", it.themeName, fileName) } ?: fileName
     }
-
 }

@@ -16,12 +16,14 @@ interface IOperationHandler {
     /**
      * 初始化
      */
-    fun init(app: Application)
+    fun init(app: Application, enableDebug: Boolean = false)
+
     /**
      * 添加监听的页面
      */
     @CalledAfterSetThemeFactory
-    fun bindPage(page:AppCompatActivity)
+    fun bindPage(page: AppCompatActivity)
+
     /**
      * 根据主题包名称得到主题包路径
      * @param strategy 一个主题包加载策略
@@ -29,6 +31,7 @@ interface IOperationHandler {
      */
     @WorkerThread
     fun loadThemeByStrategy(strategy: IThemeLoadStrategy, iLoadListener: ILoadListener? = null)
+
     /**
      * 应用主题
      */
@@ -39,10 +42,12 @@ interface IOperationHandler {
      * @param attrMap 自定义属性映射
      */
     fun configCustomAttrs(attrMap: MutableMap<String, Class<out BaseAttr>>)
+
     /**
      * 外部添加主题加载状态监听
      */
-    fun addExtraLoadListener(lifecycleOwner: LifecycleOwner,loadListener:ILoadListener)
+    fun addExtraLoadListener(lifecycleOwner: LifecycleOwner, loadListener: ILoadListener)
+
     /**
      * 清空当前缓存视图集
      */
