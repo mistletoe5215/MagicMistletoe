@@ -9,7 +9,7 @@
     multiTheme:enable="true"
     tools:context=".MainActivity">
     <com.google.android.material.imageview.ShapeableImageView
-        multiTheme:multiAlpha="@integer/placeholder_image_alpha"
+        android:alpha="@dimen/placeholder_image_alpha"
         android:src="@drawable/ic_avatar"
         android:layout_marginTop="20dp"
         android:layout_width="220dp"

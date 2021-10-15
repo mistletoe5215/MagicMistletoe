@@ -11,7 +11,7 @@ interface IResourceHandler {
     fun getDrawable(resId: Int): Drawable
     fun getTextString(resId: Int): String
     fun getColor(resId: Int): Int
-    fun getInteger(resId: Int): Int
+    fun getDimenString(resId: Int): String
     fun getColorStateList(resId: Int): ColorStateList
     fun getAssetsFilePath(fileName:String):String
 }

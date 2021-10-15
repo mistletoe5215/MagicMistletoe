@@ -320,23 +320,23 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
     }
 
     /**
-     * 根据整数值的资源id索引皮肤资源中的integers.xml中的值
+     * 根据资源id索引皮肤资源中dimen的值
      * @param resId 整数值的资源id
-     * @return 皮肤资源中的integers.xml中对应的值
+     * @return 皮肤资源中dimen对应的值
      */
-    override fun getInteger(resId: Int): Int {
+    override fun getDimenString(resId: Int): String {
         val originResources = app.resources
-        val originInteger = originResources.getInteger(resId)
+        val originDimen = originResources.getString(resId)
         if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
-            return originInteger
+            return originDimen
         }
         val entryName = originResources.getResourceEntryName(resId)
-        val resourceId = mResource!!.getIdentifier(entryName, "integer", mSkinPkgName)
+        val resourceId = mResource!!.getIdentifier(entryName, "dimen", mSkinPkgName)
         return try {
-            return mResource!!.getInteger(resourceId)
+            return mResource!!.getString(resourceId)
         } catch (e: Exception) {
-            MultiThemeLog.d("get integer value  failed with resId:${resId},use origin integer value")
-            originInteger
+            MultiThemeLog.d("get dimen value  failed with resId:${resId},use origin dimen value")
+            originDimen
         }
     }
 
