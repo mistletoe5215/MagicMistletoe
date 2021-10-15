@@ -320,6 +320,27 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
     }
 
     /**
+     * 根据整数值的资源id索引皮肤资源中的integers.xml中的值
+     * @param resId 整数值的资源id
+     * @return 皮肤资源中的integers.xml中对应的值
+     */
+    override fun getInteger(resId: Int): Int {
+        val originResources = app.resources
+        val originInteger = originResources.getInteger(resId)
+        if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
+            return originInteger
+        }
+        val entryName = originResources.getResourceEntryName(resId)
+        val resourceId = mResource!!.getIdentifier(entryName, "integer", mSkinPkgName)
+        return try {
+            return mResource!!.getInteger(resourceId)
+        } catch (e: Exception) {
+            MultiThemeLog.d("get integer value  failed with resId:${resId},use origin integer value")
+            originInteger
+        }
+    }
+
+    /**
      * 根据selector形式的颜色资源id索引皮肤资源中的color/xxx.xml文件的值
      * @param resId 颜色的资源id
      * @return ColorStateList 皮肤资源中的color/xxx.xml文件对应的ColorStateList对象
