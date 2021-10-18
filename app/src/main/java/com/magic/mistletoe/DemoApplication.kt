@@ -34,7 +34,6 @@ class DemoApplication : Application() {
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
                 super.onActivityPreCreated(activity, savedInstanceState)
-                activity.layoutInflater.factory = MultiThemeFactory()
             }
 
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {

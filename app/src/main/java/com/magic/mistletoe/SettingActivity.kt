@@ -4,8 +4,6 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import com.magic.mistletoe.strategy.NightThemeStrategy
 import com.magic.mistletoe.utils.SPUtils
 import com.magic.multi.theme.core.action.SkinLoadManager
@@ -16,7 +14,7 @@ import com.magic.multi.theme.core.exception.SkinLoadException
  * Created by mistletoe
  * on 2021/8/19
  **/
-class SettingActivity : AppCompatActivity() {
+class SettingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setting)

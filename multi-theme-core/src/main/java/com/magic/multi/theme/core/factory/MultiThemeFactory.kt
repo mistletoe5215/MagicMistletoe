@@ -1,10 +1,14 @@
 package com.magic.multi.theme.core.factory
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RestrictTo
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatTextView
+import com.magic.multi.theme.core.BuildConfig
 import com.magic.multi.theme.core.action.SkinLoadManager
 import com.magic.multi.theme.core.annotation.UpdateTheme
 import com.magic.multi.theme.core.base.BaseAttr
@@ -163,6 +167,14 @@ class MultiThemeFactory : LayoutInflater.Factory {
         //execute Custom Theme View's function that contain updateTheme annotation
         mViewImplList.forEach { viewImpl ->
             val clazz = viewImpl::class.java
+            //clazz.declaredMethods may crash ,see https://juejin.cn/post/6899419907340992519
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && mutableListOf(
+                    "androidx.appcompat.widget.AppCompatTextView",
+                    "androidx.appcompat.widget.AppCompatEditText"
+                ).contains(clazz.canonicalName ?: "")
+            ) {
+                return@forEach
+            }
             val methods = clazz.declaredMethods
             val updateThemeMethod =
                 methods.find { method -> method.getAnnotation(UpdateTheme::class.java) != null }
