@@ -92,6 +92,10 @@ class MultiThemeFactory : LayoutInflater.Factory {
             MultiThemeLog.e("$mName transfer failed!reason:" + e.message)
             view = null
         }
+        //Fix:屏蔽小米手机系统默认取反的夜间模式
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            view?.isForceDarkAllowed = false
+        }
         return view
     }
 
