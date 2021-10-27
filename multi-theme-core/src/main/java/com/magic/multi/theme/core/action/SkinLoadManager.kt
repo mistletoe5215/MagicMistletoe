@@ -193,7 +193,7 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
 
     @CalledAfterSetThemeFactory
     override fun bindPage(page: AppCompatActivity) {
-        (page.layoutInflater.factory as? MultiThemeFactory)?.apply {
+        (page.layoutInflater.factory2 as? MultiThemeFactory)?.apply {
             mPageFactoryMap[page] = this
         }
         page.lifecycle.addObserver(object : LifecycleObserver {

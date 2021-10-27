@@ -6,9 +6,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RestrictTo
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatTextView
-import com.magic.multi.theme.core.BuildConfig
 import com.magic.multi.theme.core.action.SkinLoadManager
 import com.magic.multi.theme.core.annotation.UpdateTheme
 import com.magic.multi.theme.core.base.BaseAttr
@@ -23,7 +20,7 @@ import com.magic.multi.theme.core.utils.InvokeUtil
  * Created by mistletoe
  * on 7/27/21
  **/
-class MultiThemeFactory : LayoutInflater.Factory {
+class MultiThemeFactory : LayoutInflater.Factory2 {
     private val mSkinViews: MutableList<SkinView> = mutableListOf()
     private val mViewImplList: MutableList<View> = mutableListOf()
 
@@ -44,6 +41,15 @@ class MultiThemeFactory : LayoutInflater.Factory {
             "SeekBar"
         )
         const val APP_COMPAT_PREFIX = "androidx.appcompat.widget.AppCompat"
+    }
+
+    override fun onCreateView(
+        parent: View?,
+        name: String,
+        context: Context,
+        attrs: AttributeSet
+    ): View? {
+        return onCreateView(name, context, attrs)
     }
 
     override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
