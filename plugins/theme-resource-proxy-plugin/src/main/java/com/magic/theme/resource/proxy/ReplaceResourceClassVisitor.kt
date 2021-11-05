@@ -1,4 +1,4 @@
-package com.magic.multi.theme.plugin
+package com.magic.theme.resource.proxy
 
 import org.objectweb.asm.commons.AdviceAdapter
 import org.objectweb.asm.*
@@ -45,21 +45,21 @@ class ReplaceResourceClassVisitor(private val className: String?, classVisitor: 
                             println("meeting $className getDrawable function")
                             mv.visitFieldInsn(
                                 GETSTATIC,
-                                "com/magic/multi/theme/core/action/SkinLoadManager",
+                                "com/magic/resource/resource/core/action/SkinLoadManager",
                                 "Companion",
-                                "Lcom/magic/multi/theme/core/action/SkinLoadManager\$Companion;"
+                                "Lcom/magic/resource/resource/core/action/SkinLoadManager\$Companion;"
                             )
                             mv.visitMethodInsn(
                                 INVOKEVIRTUAL,
-                                "com/magic/multi/theme/core/action/SkinLoadManager\$Companion",
+                                "com/magic/resource/resource/core/action/SkinLoadManager\$Companion",
                                 "getInstance",
-                                "()Lcom/magic/multi/theme/core/action/SkinLoadManager;",
+                                "()Lcom/magic/resource/resource/core/action/SkinLoadManager;",
                                 false
                             )
                             mv.visitVarInsn(ILOAD, 1)
                             mv.visitMethodInsn(
                                 INVOKEVIRTUAL,
-                                "com/magic/multi/theme/core/action/SkinLoadManager",
+                                "com/magic/resource/resource/core/action/SkinLoadManager",
                                 "getDrawable",
                                 "(I)Landroid/graphics/drawable/Drawable;",
                                 false
@@ -73,21 +73,21 @@ class ReplaceResourceClassVisitor(private val className: String?, classVisitor: 
                             println("meeting $className  getColor function")
                             mv.visitFieldInsn(
                                 GETSTATIC,
-                                "com/magic/multi/theme/core/action/SkinLoadManager",
+                                "com/magic/resource/resource/core/action/SkinLoadManager",
                                 "Companion",
-                                "Lcom/magic/multi/theme/core/action/SkinLoadManager\$Companion;"
+                                "Lcom/magic/resource/resource/core/action/SkinLoadManager\$Companion;"
                             )
                             mv.visitMethodInsn(
                                 INVOKEVIRTUAL,
-                                "com/magic/multi/theme/core/action/SkinLoadManager\$Companion",
+                                "com/magic/resource/resource/core/action/SkinLoadManager\$Companion",
                                 "getInstance",
-                                "()Lcom/magic/multi/theme/core/action/SkinLoadManager;",
+                                "()Lcom/magic/resource/resource/core/action/SkinLoadManager;",
                                 false
                             )
                             mv.visitVarInsn(ILOAD, 1)
                             mv.visitMethodInsn(
                                 INVOKEVIRTUAL,
-                                "com/magic/multi/theme/core/action/SkinLoadManager",
+                                "com/magic/resource/resource/core/action/SkinLoadManager",
                                 "getColor",
                                 "(I)I",
                                 false
@@ -101,21 +101,21 @@ class ReplaceResourceClassVisitor(private val className: String?, classVisitor: 
                             println("meeting $className  getColorStateList function")
                             mv.visitFieldInsn(
                                 GETSTATIC,
-                                "com/magic/multi/theme/core/action/SkinLoadManager",
+                                "com/magic/resource/resource/core/action/SkinLoadManager",
                                 "Companion",
-                                "Lcom/magic/multi/theme/core/action/SkinLoadManager\$Companion;"
+                                "Lcom/magic/resource/resource/core/action/SkinLoadManager\$Companion;"
                             )
                             mv.visitMethodInsn(
                                 INVOKEVIRTUAL,
-                                "com/magic/multi/theme/core/action/SkinLoadManager\$Companion",
+                                "com/magic/resource/resource/core/action/SkinLoadManager\$Companion",
                                 "getInstance",
-                                "()Lcom/magic/multi/theme/core/action/SkinLoadManager;",
+                                "()Lcom/magic/resource/resource/core/action/SkinLoadManager;",
                                 false
                             )
                             mv.visitVarInsn(ILOAD, 1)
                             mv.visitMethodInsn(
                                 INVOKEVIRTUAL,
-                                "com/magic/multi/theme/core/action/SkinLoadManager",
+                                "com/magic/resource/resource/core/action/SkinLoadManager",
                                 "getColorStateList",
                                 "(I)Landroid/content/res/ColorStateList;",
                                 false

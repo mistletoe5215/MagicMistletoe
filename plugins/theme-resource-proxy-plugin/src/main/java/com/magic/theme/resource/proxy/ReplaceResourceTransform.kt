@@ -1,4 +1,4 @@
-package com.magic.multi.theme.plugin
+package com.magic.theme.resource.proxy
 
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager

@@ -1,4 +1,4 @@
-package com.magic.multi.theme.plugin
+package com.magic.theme.resource.proxy
 
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin

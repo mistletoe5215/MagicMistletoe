@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'kotlin'
     id 'maven'
-    id 'com.github.dcendents.android-maven' apply false
 }
 java {
     sourceCompatibility JavaVersion.VERSION_1_8
