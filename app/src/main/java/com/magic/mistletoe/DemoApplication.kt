@@ -13,7 +13,6 @@ import com.magic.multi.theme.core.action.SkinLoadManager
 import com.magic.multi.theme.core.api.ILoadListener
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.exception.SkinLoadException
-import com.magic.multi.theme.core.factory.MultiThemeFactory
 
 /**
  * Created by mistletoe
@@ -67,8 +66,7 @@ class DemoApplication : Application() {
             }
 
         })
-        val themeName = SPUtils.getInstance(ThemeConstant.THEME_TABLE)?.getString(ThemeConstant.THEME_KEY)
-        when (themeName) {
+        when (SPUtils.getInstance(ThemeConstant.THEME_TABLE)?.getString(ThemeConstant.THEME_KEY)) {
             ThemeConstant.THEME_NIGHT -> {
                 SkinLoadManager.getInstance()
                     .loadThemeByStrategy(NightThemeStrategy, object : ILoadListener {

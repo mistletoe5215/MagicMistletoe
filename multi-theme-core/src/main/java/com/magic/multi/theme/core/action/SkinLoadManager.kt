@@ -10,7 +10,6 @@ import android.content.res.Resources.NotFoundException
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import androidx.appcompat.app.AppCompatActivity
-import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -204,11 +203,10 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         })
     }
 
-    @SuppressLint("RestrictedApi")
     override fun loadThemeByStrategy(strategy: IThemeLoadStrategy, iLoadListener: ILoadListener?) {
-        ArchTaskExecutor.getIOThreadExecutor().execute {
-            this.mStrategy = strategy
-            val filePath = strategy.getOrGenerateThemePackage(this.app)
+        mScope.launch(Dispatchers.IO) {
+            this@SkinLoadManager.mStrategy = strategy
+            val filePath = strategy.getOrGenerateThemePackage(this@SkinLoadManager.app)
             if (filePath.isNullOrEmpty()) {
                 iLoadListener?.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
             } else {
