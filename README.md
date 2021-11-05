@@ -3,9 +3,9 @@
 
   #### 背景
  
-  > 时隔四年，在网易换肤之前的思路下，做了几点改进，现在完全通过反射创建View，并且在`SkinLoadManager`中提供一个`configCustomAttrs`以支持自定义View的属性插队替换
+  > 借鉴网易换肤之前的思路下，做了几点改进，现在完全通过反射创建View，并且在`SkinLoadManager`中提供一个`configCustomAttrs`以支持自定义View的属性插队替换
   
-  > 摈弃了之前的`AsyncTask`,使用kotlin 协程进行主题包的资源转换
+  > 摈弃了之前的`AsyncTask`API,使用kotlin 协程进行主题包的资源转换
   
   > 使用kotlin重构所有Java代码实现
  
@@ -16,6 +16,29 @@
   > 支持自定义主题资源下发
   
   #### 最佳使用方式
+  
+  > STEP 0 应用资源代理插件
+  
+   ```groovy
+    //in root build.gradle
+    buildscript {
+    ext.kotlin_version = "1.5.21"
+    repositories {
+        //... 
+        maven { url 'https://jitpack.io' }
+    }
+    dependencies {
+        //...
+        classpath 'com.github.mistletoe5215:MultiThemePlugin:0.0.1'
+    }
+    //in app/module build.gradle
+    plugins {
+    //...
+    id 'multitheme'
+}
+}
+   
+   ```groovy
   
   > STEP 1 宿主项目(示例Demo为本项目`app`模块)依赖多主题框架AAR
  
