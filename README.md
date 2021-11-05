@@ -14,16 +14,6 @@
   > 支持页面、弹窗的主题切换
   > 支持Android 夜间模式
   > 支持自定义主题资源下发
-
-  #### 效果展示
-  
-  > 默认主题
-
-  ![](./snapshots/origin_theme.png)
-  
-  > 点击切换主题
-
-  ![](./snapshots/dark_theme.png)
   
   #### 最佳使用方式
   
@@ -356,3 +346,4 @@ class ImageForegroundAttr:BaseAttr() {
    
    
  这样一个前景色的自定义主题切换设置就完成了
+ 
