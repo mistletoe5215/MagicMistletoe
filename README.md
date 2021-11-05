@@ -17,7 +17,7 @@
   
   #### 最佳使用方式
   
-  > STEP 0 应用multitheme资源代理插件 [插件地址](https://github.com/mistletoe5215/MultiThemePlugin)
+  > STEP 0 应用`multitheme`资源代理插件 [插件地址](https://github.com/mistletoe5215/MultiThemePlugin)
   
    ```groovy
     //in root build.gradle
