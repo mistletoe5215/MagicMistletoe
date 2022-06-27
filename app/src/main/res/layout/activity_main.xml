@@ -1,61 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:multiTheme="http://schemas.android.com/apk/multi.theme"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/main_bg"
     multiTheme:enable="true"
     tools:context=".MainActivity">
+
     <com.google.android.material.imageview.ShapeableImageView
-        android:alpha="@dimen/placeholder_image_alpha"
-        android:src="@drawable/ic_avatar"
-        android:layout_marginTop="20dp"
+        android:id="@+id/avatar"
         android:layout_width="220dp"
         android:layout_height="220dp"
-        android:scaleType="centerCrop"
-        android:id="@+id/avatar"
+        android:layout_marginTop="20dp"
+        android:alpha="@dimen/placeholder_image_alpha"
         android:background="@color/main_text"
         android:foreground="@drawable/image_foreground_modal"
-        multiTheme:enable="true"
-        app:shapeAppearance="@style/CircleStyle"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_avatar"
         app:layout_constraintBottom_toTopOf="@+id/jump"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/CircleStyle"
+        multiTheme:enable="true"
+        multiTheme:mode="light" />
 
     <com.magic.mistletoe.widget.CustomTextView
-        android:background="@color/teal_200"
-        android:layout_marginTop="20dp"
+        android:id="@+id/jump"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/teal_200"
         android:gravity="center"
-        android:id="@+id/jump"
         android:text="打开二级页面"
         android:textColor="@color/text_color_selector_quaternary_dominant"
-        multiTheme:enable="true"
         app:layout_constraintBottom_toTopOf="@+id/open_dialog"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/avatar"/>
+        app:layout_constraintTop_toBottomOf="@+id/avatar"
+        multiTheme:enable="true" />
+
     <androidx.appcompat.widget.AppCompatTextView
-        android:background="@color/teal_200"
-        android:layout_marginTop="20dp"
+        android:id="@+id/open_dialog"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/teal_200"
         android:gravity="center"
-        android:id="@+id/open_dialog"
         android:text="打开弹窗"
         android:textColor="@color/main_text"
-        multiTheme:enable="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/jump"/>
+        app:layout_constraintTop_toBottomOf="@+id/jump"
+        multiTheme:enable="true"
+        multiTheme:mode="light" />
+
     <com.magic.mistletoe.widget.CustomView
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
         android:layout_height="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         multiTheme:enable="true"
-        />
+        multiTheme:mode="light" />
 </androidx.constraintlayout.widget.ConstraintLayout>

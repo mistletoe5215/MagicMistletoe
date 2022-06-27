@@ -40,5 +40,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'com.github.mistletoe5215:MagicMistletoe:1.4.5'
+//    implementation 'com.github.mistletoe5215:MagicMistletoe:1.4.5'
+
+    implementation project(path: ':multi-theme-core')
 }

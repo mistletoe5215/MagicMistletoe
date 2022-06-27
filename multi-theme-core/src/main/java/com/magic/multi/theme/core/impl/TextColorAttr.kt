@@ -5,6 +5,9 @@ import android.widget.TextView
 import com.magic.multi.theme.core.action.SkinLoadManager
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.constants.AttrConstants
+import com.magic.multi.theme.core.constants.SkinConfig.DEFAULT_ATTR_NAME_MODE
+import com.magic.multi.theme.core.constants.SkinConfig.DEFAULT_ATTR_VALUE_MODE_DARK
+import com.magic.multi.theme.core.constants.SkinConfig.DEFAULT_ATTR_VALUE_MODE_LIGHT
 import com.magic.multi.theme.core.log.MultiThemeLog
 
 /**
@@ -16,7 +19,16 @@ internal class TextColorAttr : BaseAttr() {
         when (view) {
             is TextView -> {
                 if (AttrConstants.TEXT_COLOR.equals(attrName, true)) {
-                    view.setTextColor(SkinLoadManager.getInstance().getColorStateList(attrValue))
+                    val modeStr = getAttrsBlock?.invoke(DEFAULT_ATTR_NAME_MODE)
+                    view.setTextColor(
+                        when (modeStr) {
+                            DEFAULT_ATTR_VALUE_MODE_LIGHT -> SkinLoadManager.getInstance()
+                                .getAppColorStateList(attrValue)
+                            DEFAULT_ATTR_VALUE_MODE_DARK -> SkinLoadManager.getInstance()
+                                .getSkinColorStateList(attrValue)
+                            else -> SkinLoadManager.getInstance().getColorStateList(attrValue)
+                        }
+                    )
                 }
             }
             else -> {

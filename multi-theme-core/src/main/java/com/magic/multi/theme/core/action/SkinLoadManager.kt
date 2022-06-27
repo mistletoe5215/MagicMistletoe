@@ -65,6 +65,8 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
      */
     private var mResource: Resources? = null
 
+    private var mSkinResource: Resources? = null
+
     /**
      * 默认皮肤标志位
      */
@@ -157,6 +159,7 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
                 val resources = resourcesDeferred.await()
                 resources?.let { res ->
                     mResource = res
+                    mSkinResource = res
                     iLoadListener?.onSuccess()
                     mOuterLoadListener.forEach {
                         it.onSuccess()
@@ -272,6 +275,31 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         }
     }
 
+    override fun getAppDrawable(resId: Int): Drawable {
+        val originResources = app.resources
+        return originResources.getDrawable(resId, null)
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    override fun getSkinDrawable(resId: Int): Drawable {
+        val originResources = app.resources
+        val originDrawable = originResources.getDrawable(resId, null)
+        if (null == mSkinResource || TextUtils.isEmpty(mSkinPkgName)) {
+            return originDrawable
+        }
+        //这里决定了换肤文件中的资源命名需要和宿主app资源命名相同
+        val entryName = originResources.getResourceEntryName(resId)
+        val resourceId = mSkinResource!!.getIdentifier(entryName, "drawable", mSkinPkgName)
+        return try {
+            mSkinResource!!.getDrawable(resourceId, null)
+        } catch (e: Exception) {
+            MultiThemeLog.d(
+                "get skin theme drawable  failed with resId:${resId},use origin drawable"
+            )
+            originDrawable
+        }
+    }
+
     /**
      * 根据字符串资源Id索引皮肤资源中的strings.xml中的值
      * @param resId 字符串资源Id
@@ -288,6 +316,30 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         val resourceId = mResource!!.getIdentifier(entryName, "string", mSkinPkgName)
         return try {
             mResource!!.getString(resourceId)
+        } catch (e: Exception) {
+            MultiThemeLog.d(
+                "get theme text string  failed with resId:${resId},use origin text string"
+            )
+            originText
+        }
+    }
+
+    override fun getAppTextString(resId: Int): String {
+        val originResources = app.resources
+        return originResources.getString(resId)
+    }
+
+    override fun getSkinTextString(resId: Int): String {
+        val originResources = app.resources
+        val originText = originResources.getString(resId)
+        if (null == mSkinResource || TextUtils.isEmpty(mSkinPkgName)) {
+            return originText
+        }
+        //这里决定了换肤文件中的资源命名需要和宿主app资源命名相同
+        val entryName = originResources.getResourceEntryName(resId)
+        val resourceId = mSkinResource!!.getIdentifier(entryName, "string", mSkinPkgName)
+        return try {
+            mSkinResource!!.getString(resourceId)
         } catch (e: Exception) {
             MultiThemeLog.d(
                 "get theme text string  failed with resId:${resId},use origin text string"
@@ -317,6 +369,27 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         }
     }
 
+    override fun getAppColor(resId: Int): Int {
+        val originResources = app.resources
+        return originResources.getColor(resId, null)
+    }
+
+    override fun getSkinColor(resId: Int): Int {
+        val originResources = app.resources
+        val originColor = originResources.getColor(resId, null)
+        if (null == mSkinResource || TextUtils.isEmpty(mSkinPkgName)) {
+            return originColor
+        }
+        val entryName = originResources.getResourceEntryName(resId)
+        val resourceId = mSkinResource!!.getIdentifier(entryName, "color", mSkinPkgName)
+        return try {
+            return mSkinResource!!.getColor(resourceId, null)
+        } catch (e: Exception) {
+            MultiThemeLog.d("get theme color  failed with resId:${resId},use origin color")
+            originColor
+        }
+    }
+
     /**
      * 根据资源id索引皮肤资源中dimen的值
      * @param resId 整数值的资源id
@@ -338,34 +411,66 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
         }
     }
 
+    override fun getAppDimenString(resId: Int): String {
+        val originResources = app.resources
+        return originResources.getString(resId)
+    }
+
+    override fun getSkinDimenString(resId: Int): String {
+        val originResources = app.resources
+        val originDimen = originResources.getString(resId)
+        if (null == mSkinResource || TextUtils.isEmpty(mSkinPkgName)) {
+            return originDimen
+        }
+        val entryName = originResources.getResourceEntryName(resId)
+        val resourceId = mSkinResource!!.getIdentifier(entryName, "dimen", mSkinPkgName)
+        return try {
+            return mSkinResource!!.getString(resourceId)
+        } catch (e: Exception) {
+            MultiThemeLog.d("get dimen value  failed with resId:${resId},use origin dimen value")
+            originDimen
+        }
+    }
+
     /**
      * 根据selector形式的颜色资源id索引皮肤资源中的color/xxx.xml文件的值
      * @param resId 颜色的资源id
      * @return ColorStateList 皮肤资源中的color/xxx.xml文件对应的ColorStateList对象
      */
     override fun getColorStateList(resId: Int): ColorStateList {
+        val originResources = app.resources
+        val originColorStateList = originResources.getColorStateList(resId, null)
+        if (null == mResource || TextUtils.isEmpty(mSkinPkgName)) {
+            return originColorStateList
+        }
         val entryName = app.resources.getResourceEntryName(resId)
-        if (isExternalSkin) {
-            val resourceId = mResource!!.getIdentifier(entryName, "color", mSkinPkgName)
-            if (resourceId == 0) {
-                try {
-                    return app.resources.getColorStateList(resId, null)
-                } catch (e: NotFoundException) {
-                    MultiThemeLog.e(e.message.toString())
-                }
-            } else {
-                try {
-                    return mResource!!.getColorStateList(resourceId, null)
-                } catch (e: NotFoundException) {
-                    MultiThemeLog.e(e.message.toString())
-                }
-            }
-        } else {
-            try {
-                return app.resources.getColorStateList(resId, null)
-            } catch (e: NotFoundException) {
-                MultiThemeLog.e(e.message.toString())
-            }
+        val resourceId = mResource!!.getIdentifier(entryName, "color", mSkinPkgName)
+        try {
+            return mResource!!.getColorStateList(resourceId, null)
+        } catch (e: NotFoundException) {
+            MultiThemeLog.e(e.message.toString())
+        }
+        val states = Array(1) { IntArray(1) }
+        return ColorStateList(states, intArrayOf(app.resources.getColor(resId, null)))
+    }
+
+    override fun getAppColorStateList(resId: Int): ColorStateList {
+        val originResources = app.resources
+        return originResources.getColorStateList(resId, null)
+    }
+
+    override fun getSkinColorStateList(resId: Int): ColorStateList {
+        val originResources = app.resources
+        val originColorStateList = originResources.getColorStateList(resId, null)
+        if (null == mSkinResource || TextUtils.isEmpty(mSkinPkgName)) {
+            return originColorStateList
+        }
+        val entryName = app.resources.getResourceEntryName(resId)
+        val resourceId = mSkinResource!!.getIdentifier(entryName, "color", mSkinPkgName)
+        try {
+            return mSkinResource!!.getColorStateList(resourceId, null)
+        } catch (e: NotFoundException) {
+            MultiThemeLog.e(e.message.toString())
         }
         val states = Array(1) { IntArray(1) }
         return ColorStateList(states, intArrayOf(app.resources.getColor(resId, null)))
