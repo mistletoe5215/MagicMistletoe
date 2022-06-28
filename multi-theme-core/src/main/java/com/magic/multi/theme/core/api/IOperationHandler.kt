@@ -27,7 +27,7 @@ interface IOperationHandler {
     /**
      * 根据主题包名称得到主题包路径
      * @param strategy 一个主题包加载策略
-     * @return 释放是否成功
+     * @param iLoadListener 加载监听
      */
     @WorkerThread
     fun loadThemeByStrategy(strategy: IThemeLoadStrategy, iLoadListener: ILoadListener? = null)
@@ -52,4 +52,12 @@ interface IOperationHandler {
      * 清空当前缓存视图集
      */
     fun clean()
+
+    /**
+     * 根据主题包名称得到主题包路径
+     * @param strategy 一个主题包加载策略
+     * @param iLoadListener 加载监听
+     */
+    @WorkerThread
+    fun preLoadThemeByStrategy(strategy: IThemeLoadStrategy, iLoadListener: ILoadListener? = null)
 }

@@ -19,7 +19,6 @@ import com.magic.multi.theme.core.exception.SkinLoadException
  * on 7/28/21
  **/
 class DemoApplication : Application() {
-    private val fileName = "theme-pkg.zip"
     override fun onCreate() {
         super.onCreate()
         SkinLoadManager.getInstance().init(this)
@@ -29,7 +28,16 @@ class DemoApplication : Application() {
             put(ImageViewAlphaAttr.IMAGE_VIEW_ALPHA, ImageViewAlphaAttr::class.java)
         }
         SkinLoadManager.getInstance().configCustomAttrs(configMap)
+        SkinLoadManager.getInstance()
+            .preLoadThemeByStrategy(NightThemeStrategy, object : ILoadListener {
+                override fun onSuccess() {
+                    Log.i("Mistletoe", "preLoad Night Theme Succeed")
+                }
 
+                override fun onFailed(e: SkinLoadException) {
+                    Log.i("Mistletoe", "preLoad Night Theme Failed")
+                }
+            })
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
                 super.onActivityPreCreated(activity, savedInstanceState)
@@ -79,34 +87,33 @@ class DemoApplication : Application() {
                         }
                     })
             }
-            ThemeConstant.THEME_AUTO ->{
-                when(resources?.configuration?.uiMode!! and Configuration.UI_MODE_NIGHT_MASK){
-                   UI_MODE_NIGHT_YES ->{
-                       SkinLoadManager.getInstance()
-                           .loadThemeByStrategy(NightThemeStrategy, object : ILoadListener {
-                               override fun onSuccess() {
-                                   SkinLoadManager.getInstance().applyTheme()
-                               }
+            ThemeConstant.THEME_AUTO -> {
+                when (resources?.configuration?.uiMode!! and Configuration.UI_MODE_NIGHT_MASK) {
+                    UI_MODE_NIGHT_YES -> {
+                        SkinLoadManager.getInstance()
+                            .loadThemeByStrategy(NightThemeStrategy, object : ILoadListener {
+                                override fun onSuccess() {
+                                    SkinLoadManager.getInstance().applyTheme()
+                                }
 
-                               override fun onFailed(e: SkinLoadException) {
-                                   Log.i("Mistletoe", "apply night theme failed")
-                               }
-                           })
-                   }
-                   else ->{
-                       SkinLoadManager.getInstance().loadThemeByStrategy(NightThemeStrategy)
-                   }
-               }
+                                override fun onFailed(e: SkinLoadException) {
+                                    Log.i("Mistletoe", "apply night theme failed")
+                                }
+                            })
+                    }
+                    else -> {
+                        SkinLoadManager.getInstance().restoreDefaultTheme()
+                    }
+                }
             }
             else -> {
-                SkinLoadManager.getInstance().loadThemeByStrategy(NightThemeStrategy)
+                SkinLoadManager.getInstance().restoreDefaultTheme()
             }
         }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        Log.i("Mis","onConfigurationChanged")
         when (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_NO -> {
                 SkinLoadManager.getInstance().restoreDefaultTheme()

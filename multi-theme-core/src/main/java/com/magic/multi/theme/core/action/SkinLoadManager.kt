@@ -19,10 +19,10 @@ import com.magic.multi.theme.core.api.ILoadListener
 import com.magic.multi.theme.core.api.IOperationHandler
 import com.magic.multi.theme.core.api.IResourceHandler
 import com.magic.multi.theme.core.base.BaseAttr
+import com.magic.multi.theme.core.cache.GlobalStore
 import com.magic.multi.theme.core.constants.AttrConstants
 import com.magic.multi.theme.core.exception.SkinLoadException
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.NULL_SKIN_PATH_EXCEPTION
-import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_FILE_NOT_EXISTS
 import com.magic.multi.theme.core.exception.SkinLoadException.Companion.SKIN_GET_NULL_RESOURCES
 import com.magic.multi.theme.core.factory.MultiThemeFactory
 import com.magic.multi.theme.core.log.MultiThemeLog
@@ -30,9 +30,8 @@ import com.magic.multi.theme.core.strategy.IThemeLoadStrategy
 import com.magic.multi.theme.core.utils.AttrConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.io.File
+import kotlinx.coroutines.withContext
 
 /**
  * 皮肤切换处理器
@@ -110,72 +109,41 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
 
     /**
      * 异步加载皮肤资源文件
-     * @param mSkinFilePath 资源文件路径
+     * @param skinFilePath 资源文件路径
      * @param iLoadListener 加载皮肤资源文件结果回调
      */
     @Suppress("ThrowableNotThrown")
-    private fun loadSkin(mSkinFilePath: String?, iLoadListener: ILoadListener?) {
+    private fun loadSkin(skinFilePath: String, iLoadListener: ILoadListener?) {
+        val cacheThemeResource = GlobalStore.themeCache[skinFilePath]
+        if (cacheThemeResource != null) {
+            mResource = cacheThemeResource
+            mSkinResource = cacheThemeResource
+            iLoadListener?.onSuccess()
+            mOuterLoadListener.forEach {
+                it.onSuccess()
+            }
+            return
+        }
         mScope.launch {
-            MultiThemeLog.i("begin load skin resource")
+            MultiThemeLog.i("begin load theme resource")
             iLoadListener?.onStart()
             mOuterLoadListener.forEach {
                 it.onStart()
             }
-            mSkinFilePath?.let {
-                val file = File(mSkinFilePath)
-                if (!file.exists()) {
-                    iLoadListener?.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
-                    mOuterLoadListener.forEach {
-                        it.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
-                    }
-                    return@launch
-                }
-                val resourcesDeferred = async(Dispatchers.IO) {
-                    try {
-                        val mInfo = app.packageManager.getPackageArchiveInfo(
-                            it,
-                            PackageManager.GET_ACTIVITIES
-                        )
-                        mSkinPkgName = mInfo?.packageName
-                        //hook addAssetPath
-                        val assetManager = AssetManager::class.java.newInstance()
-                        val addAssetPath =
-                            assetManager.javaClass.getMethod("addAssetPath", String::class.java)
-                        addAssetPath.invoke(assetManager, it)
-                        //previous resources
-                        val previousRes = app.resources
-                        isDefaultSkin = false
-                        //extends previous configuration,generate new resources
-                        Resources(
-                            assetManager,
-                            previousRes.displayMetrics,
-                            previousRes.configuration
-                        )
-                    } catch (e: Exception) {
-                        MultiThemeLog.e(e.message.toString())
-                        null
-                    }
-                }
-                val resources = resourcesDeferred.await()
-                resources?.let { res ->
-                    mResource = res
-                    mSkinResource = res
-                    iLoadListener?.onSuccess()
-                    mOuterLoadListener.forEach {
-                        it.onSuccess()
-                    }
-                } ?: run {
-                    isDefaultSkin = true
-                    iLoadListener?.onFailed(SkinLoadException(SKIN_GET_NULL_RESOURCES))
-                    mOuterLoadListener.forEach {
-                        it.onFailed(SkinLoadException(SKIN_GET_NULL_RESOURCES))
-                    }
-                }
-
-            } ?: run {
-                iLoadListener?.onFailed(SkinLoadException(SKIN_FILE_NOT_EXISTS))
+            val resources = skinFilePath.convert2ThemeResource()
+            if (resources != null) {
+                mResource = resources
+                mSkinResource = resources
+                iLoadListener?.onSuccess()
                 mOuterLoadListener.forEach {
-                    it.onFailed(SkinLoadException(SKIN_FILE_NOT_EXISTS))
+                    it.onSuccess()
+                }
+                GlobalStore.themeCache[skinFilePath] = resources
+            } else {
+                isDefaultSkin = true
+                iLoadListener?.onFailed(SkinLoadException(SKIN_GET_NULL_RESOURCES))
+                mOuterLoadListener.forEach {
+                    it.onFailed(SkinLoadException(SKIN_GET_NULL_RESOURCES))
                 }
             }
         }
@@ -207,14 +175,12 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
     }
 
     override fun loadThemeByStrategy(strategy: IThemeLoadStrategy, iLoadListener: ILoadListener?) {
-        mScope.launch(Dispatchers.IO) {
-            this@SkinLoadManager.mStrategy = strategy
-            val filePath = strategy.getOrGenerateThemePackage(this@SkinLoadManager.app)
-            if (filePath.isNullOrEmpty()) {
-                iLoadListener?.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
-            } else {
-                loadSkin(filePath, iLoadListener)
-            }
+        this.mStrategy = strategy
+        val filePath = strategy.getOrGenerateThemePackage(this.app)
+        if (filePath.isNullOrEmpty()) {
+            iLoadListener?.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
+        } else {
+            loadSkin(filePath, iLoadListener)
         }
     }
 
@@ -248,6 +214,57 @@ class SkinLoadManager private constructor() : IOperationHandler, IResourceHandle
 
     override fun clean() {
         mPageFactoryMap.clear()
+    }
+
+    override fun preLoadThemeByStrategy(
+        strategy: IThemeLoadStrategy,
+        iLoadListener: ILoadListener?,
+    ) {
+        val filePath = strategy.getOrGenerateThemePackage(this.app)
+        if (filePath.isNullOrEmpty()) {
+            iLoadListener?.onFailed(SkinLoadException(NULL_SKIN_PATH_EXCEPTION))
+        } else {
+            mScope.launch {
+                MultiThemeLog.i("begin preLoad theme resource")
+                iLoadListener?.onStart()
+                val resources = filePath.convert2ThemeResource()
+                if (resources != null) {
+                    mSkinResource = resources
+                    iLoadListener?.onSuccess()
+                } else {
+                    iLoadListener?.onFailed(SkinLoadException(SKIN_GET_NULL_RESOURCES))
+                }
+            }
+        }
+    }
+
+    private suspend fun String.convert2ThemeResource(): Resources? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val mInfo = app.packageManager.getPackageArchiveInfo(
+                    this@convert2ThemeResource,
+                    PackageManager.GET_ACTIVITIES
+                )
+                mSkinPkgName = mInfo?.packageName
+                //hook addAssetPath
+                val assetManager = AssetManager::class.java.newInstance()
+                val addAssetPath =
+                    assetManager.javaClass.getMethod("addAssetPath", String::class.java)
+                addAssetPath.invoke(assetManager, this@convert2ThemeResource)
+                //previous resources
+                val previousRes = app.resources
+                isDefaultSkin = false
+                //extends previous configuration,generate new resources
+                Resources(
+                    assetManager,
+                    previousRes.displayMetrics,
+                    previousRes.configuration
+                )
+            } catch (e: Exception) {
+                MultiThemeLog.e(e.message.toString())
+                null
+            }
+        }
     }
     //===================  检测到xml中的锚点控件后进行动态替换的方法  自定义View 需要实现===================
     /**
