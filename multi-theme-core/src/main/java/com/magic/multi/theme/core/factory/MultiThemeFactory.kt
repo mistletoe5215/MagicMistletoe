@@ -14,6 +14,7 @@ import com.magic.multi.theme.core.impl.SkinView
 import com.magic.multi.theme.core.log.MultiThemeLog
 import com.magic.multi.theme.core.utils.AttrConfig
 import com.magic.multi.theme.core.utils.InvokeUtil
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * 多主题layout factory
@@ -21,8 +22,8 @@ import com.magic.multi.theme.core.utils.InvokeUtil
  * on 7/27/21
  **/
 class MultiThemeFactory : LayoutInflater.Factory2 {
-    private val mSkinViews: MutableList<SkinView> = mutableListOf()
-    private val mViewImplList: MutableList<View> = mutableListOf()
+    private val mSkinViews = CopyOnWriteArrayList<SkinView>()
+    private val mViewImplList = CopyOnWriteArrayList<View>()
 
     companion object {
         val APP_COMPAT_WIDGET_NAME_LIST = listOf(
