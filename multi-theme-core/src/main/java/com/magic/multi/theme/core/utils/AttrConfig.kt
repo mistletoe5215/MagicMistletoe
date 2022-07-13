@@ -1,6 +1,5 @@
 package com.magic.multi.theme.core.utils
 
-import android.util.AttributeSet
 import com.magic.multi.theme.core.base.BaseAttr
 import com.magic.multi.theme.core.constants.AttrConstants
 import com.magic.multi.theme.core.constants.AttrConstants.BACKGROUND
@@ -35,8 +34,7 @@ internal object AttrConfig {
         attrValueRefId: Int,
         attrValueRefName: String?,
         typeName: String?,
-        attrAssetsValue: String? = null,
-        attrSet: Map<String, Any>?,
+        attrAssetsValue: String? = null
     ): BaseAttr? {
         //读取外部设置的属性
         if (externalAttrMap.keys.contains(attrName)) {
@@ -47,9 +45,6 @@ internal object AttrConfig {
             mExternalSkinAttrObj?.entryName = attrValueRefName
             mExternalSkinAttrObj?.entryType = typeName
             mExternalSkinAttrObj?.attrAssetsValue = attrAssetsValue
-            mExternalSkinAttrObj?.getAttrsBlock = { name: String ->
-                attrSet?.getOrDefault(name, null)
-            }
             return mExternalSkinAttrObj
         }
         val mSkinAttr: BaseAttr = when (attrName) {
@@ -74,9 +69,6 @@ internal object AttrConfig {
         mSkinAttr.entryName = attrValueRefName
         mSkinAttr.entryType = typeName
         mSkinAttr.attrAssetsValue = attrAssetsValue
-        mSkinAttr.getAttrsBlock = { name: String ->
-            attrSet?.getOrDefault(name, null)
-        }
         return mSkinAttr
     }
 

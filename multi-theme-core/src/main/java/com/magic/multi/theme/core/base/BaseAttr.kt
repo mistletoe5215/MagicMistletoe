@@ -7,7 +7,6 @@ import android.view.View
  * on 7/23/21
  **/
 abstract class BaseAttr {
-
     /**
      * xml里某个属性的名称
      */
@@ -27,27 +26,18 @@ abstract class BaseAttr {
      * xml里某个属性值的类型
      */
     var entryType: String? = null
-
     /**
      * file name
      * assets 里的资源名称
      */
-    var attrAssetsValue: String? = null
-
+    var attrAssetsValue: String?  = null
     /**
      * 是否在解析时立即apply
      */
     open var applyImmediate: Boolean = false
 
     /**
-     * 获取当前View attr其他属性
-     */
-    var getAttrsBlock: GetAttrsBlock? = null
-
-    /**
      *  刷新该控件的该属性
      */
     abstract fun apply(view: View?)
 }
-
-typealias GetAttrsBlock = (name: String) -> Any?

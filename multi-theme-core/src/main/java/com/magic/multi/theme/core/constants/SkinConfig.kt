@@ -13,14 +13,7 @@ object SkinConfig {
     /**
      * 是否开启换肤功能视图属性
      */
-    const val DEFAULT_ATTR_NAME_ABLE = "enable"
-
-    const val DEFAULT_ATTR_NAME_MODE = "mode"
-
-    const val DEFAULT_ATTR_VALUE_MODE_LIGHT = "light"
-    const val DEFAULT_ATTR_VALUE_MODE_DARK = "dark"
-
+    const val DEFAULT_ATTR_NAME = "enable"
 
     const val MULTI_THEME_TAG = "multi-theme-tag"
-
 }

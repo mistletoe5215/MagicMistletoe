@@ -57,28 +57,17 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
         var view: View? = null
         val skinEnable = attrs.getAttributeBooleanValue(
             SkinConfig.DEFAULT_SCHEMA_NAME,
-            SkinConfig.DEFAULT_ATTR_NAME_ABLE,
+            SkinConfig.DEFAULT_ATTR_NAME,
             false
         )
-        val attrSet = parseAttrSet(attrs)
         if (skinEnable) {
             view = createView(context, name, attrs)
             view?.let {
-                parseSkinAttr(context, attrs, it, attrSet)
+                parseSkinAttr(context, attrs, it)
                 mViewImplList.add(it)
             }
         }
         return view
-    }
-
-    private fun parseAttrSet(attrs: AttributeSet): Map<String, Any> {
-        val attrSet = hashMapOf<String, Any>()
-        for (i in 0 until attrs.attributeCount) {
-            val attrName = attrs.getAttributeName(i)
-            val attrValue = attrs.getAttributeValue(i)
-            attrSet[attrName] = attrValue
-        }
-        return attrSet
     }
 
     /**
@@ -123,12 +112,7 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
      * @param attrs 换肤视图控件的属性集合(key-value的set)
      * @param view 视图对象
      */
-    private fun parseSkinAttr(
-        context: Context,
-        attrs: AttributeSet,
-        view: View,
-        attrSet: Map<String, Any>
-    ) {
+    private fun parseSkinAttr(context: Context, attrs: AttributeSet, view: View) {
         val viewAttrs: MutableList<BaseAttr> = mutableListOf()
         for (i in 0 until attrs.attributeCount) {
             val attrName = attrs.getAttributeName(i)
@@ -142,14 +126,7 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
                         val id = attrValue.substring(1).toInt()
                         val entryName = context.resources.getResourceEntryName(id)
                         val typeName = context.resources.getResourceTypeName(id)
-                        val mSkinAttr =
-                            AttrConfig.get(
-                                attrName = attrName,
-                                attrValueRefId = id,
-                                attrValueRefName = entryName,
-                                typeName = typeName,
-                                attrSet = attrSet
-                            )
+                        val mSkinAttr = AttrConfig.get(attrName, id, entryName, typeName)
                         mSkinAttr?.let {
                             viewAttrs.add(it)
                         }
@@ -161,15 +138,7 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
                 attrValue.startsWith("assets/") -> {
                     try {
                         val assetsResourceValue = attrValue.replace("assets/", "")
-                        val mSkinAttr =
-                            AttrConfig.get(
-                                attrName = attrName,
-                                attrValueRefId = 0,
-                                attrValueRefName = "",
-                                typeName = "",
-                                attrAssetsValue = assetsResourceValue,
-                                attrSet = null
-                            )
+                        val mSkinAttr = AttrConfig.get(attrName, 0, "", "", assetsResourceValue)
                         mSkinAttr?.let {
                             viewAttrs.add(it)
                         }

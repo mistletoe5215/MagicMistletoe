@@ -28,16 +28,6 @@ class DemoApplication : Application() {
             put(ImageViewAlphaAttr.IMAGE_VIEW_ALPHA, ImageViewAlphaAttr::class.java)
         }
         SkinLoadManager.getInstance().configCustomAttrs(configMap)
-        SkinLoadManager.getInstance()
-            .preLoadThemeByStrategy(NightThemeStrategy, object : ILoadListener {
-                override fun onSuccess() {
-                    Log.i("Mistletoe", "preLoad Night Theme Succeed")
-                }
-
-                override fun onFailed(e: SkinLoadException) {
-                    Log.i("Mistletoe", "preLoad Night Theme Failed")
-                }
-            })
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
                 super.onActivityPreCreated(activity, savedInstanceState)
