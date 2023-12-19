@@ -14,6 +14,7 @@ import com.magic.multi.theme.core.impl.SkinView
 import com.magic.multi.theme.core.log.MultiThemeLog
 import com.magic.multi.theme.core.utils.AttrConfig
 import com.magic.multi.theme.core.utils.InvokeUtil
+import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -21,9 +22,9 @@ import java.util.concurrent.CopyOnWriteArrayList
  * Created by mistletoe
  * on 7/27/21
  **/
-class MultiThemeFactory : LayoutInflater.Factory2 {
-    private val mSkinViews = CopyOnWriteArrayList<SkinView>()
-    private val mViewImplList = CopyOnWriteArrayList<View>()
+class MultiThemeFactory : LayoutInflater.Factory {
+    private val mSkinViewRefs = CopyOnWriteArrayList<WeakReference<SkinView>>()
+    private val mViewImplRefList = CopyOnWriteArrayList<WeakReference<View>>()
 
     companion object {
         val APP_COMPAT_WIDGET_NAME_LIST = listOf(
@@ -44,14 +45,6 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
         const val APP_COMPAT_PREFIX = "androidx.appcompat.widget.AppCompat"
     }
 
-    override fun onCreateView(
-        parent: View?,
-        name: String,
-        context: Context,
-        attrs: AttributeSet
-    ): View? {
-        return onCreateView(name, context, attrs)
-    }
 
     override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
         var view: View? = null
@@ -64,7 +57,7 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
             view = createView(context, name, attrs)
             view?.let {
                 parseSkinAttr(context, attrs, it)
-                mViewImplList.add(it)
+                mViewImplRefList.add(WeakReference(it))
             }
         }
         return view
@@ -146,6 +139,7 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
                         MultiThemeLog.e(e.message.toString())
                     }
                 }
+
                 else -> {
                     // do nothing
                 }
@@ -155,7 +149,7 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
             val skinView = SkinView()
             skinView.view = view
             skinView.attrs = viewAttrs
-            mSkinViews.add(skinView)
+            mSkinViewRefs.add(WeakReference(skinView))
             if (SkinLoadManager.getInstance().isExternalSkin) {
                 skinView.apply()
             }
@@ -170,13 +164,13 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
     }
 
     fun applyTheme() {
-        mSkinViews.forEach { skinView ->
+        mSkinViewRefs.mapNotNull { it.get() }.forEach { skinView ->
             skinView.view?.let {
                 skinView.apply()
             }
         }
         //execute Custom Theme View's function that contain updateTheme annotation
-        mViewImplList.forEach { viewImpl ->
+        mViewImplRefList.mapNotNull { it.get() }.forEach { viewImpl ->
             val clazz = viewImpl::class.java
             //clazz.declaredMethods may crash ,see https://juejin.cn/post/6899419907340992519
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && mutableListOf(
@@ -199,7 +193,8 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     internal fun clean() {
-        if (mSkinViews.isEmpty()) {
+        val mSkinViews = mSkinViewRefs.mapNotNull { it.get() }
+        if (mSkinViewRefs.isEmpty()) {
             return
         }
         for (skinView in mSkinViews) {
@@ -208,6 +203,7 @@ class MultiThemeFactory : LayoutInflater.Factory2 {
             }
             skinView.clean()
         }
+        mSkinViewRefs.clear()
     }
 
     private inline fun safeBlock(block: () -> Unit) {

@@ -10,7 +10,7 @@ import com.magic.multi.theme.core.factory.MultiThemeFactory
  **/
 abstract class BaseActivity:AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        layoutInflater.factory2 = MultiThemeFactory()
+        layoutInflater.factory = MultiThemeFactory()
         super.onCreate(savedInstanceState)
     }
 }
