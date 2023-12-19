@@ -14,7 +14,6 @@ import com.magic.multi.theme.core.impl.SkinView
 import com.magic.multi.theme.core.log.MultiThemeLog
 import com.magic.multi.theme.core.utils.AttrConfig
 import com.magic.multi.theme.core.utils.InvokeUtil
-import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -23,8 +22,8 @@ import java.util.concurrent.CopyOnWriteArrayList
  * on 7/27/21
  **/
 class MultiThemeFactory : LayoutInflater.Factory {
-    private val mSkinViewRefs = CopyOnWriteArrayList<WeakReference<SkinView>>()
-    private val mViewImplRefList = CopyOnWriteArrayList<WeakReference<View>>()
+    private val mSkinViews = CopyOnWriteArrayList<SkinView>()
+    private val mViewImplList = CopyOnWriteArrayList<View>()
 
     companion object {
         val APP_COMPAT_WIDGET_NAME_LIST = listOf(
@@ -57,7 +56,7 @@ class MultiThemeFactory : LayoutInflater.Factory {
             view = createView(context, name, attrs)
             view?.let {
                 parseSkinAttr(context, attrs, it)
-                mViewImplRefList.add(WeakReference(it))
+                mViewImplList.add(it)
             }
         }
         return view
@@ -149,7 +148,7 @@ class MultiThemeFactory : LayoutInflater.Factory {
             val skinView = SkinView()
             skinView.view = view
             skinView.attrs = viewAttrs
-            mSkinViewRefs.add(WeakReference(skinView))
+            mSkinViews.add(skinView)
             if (SkinLoadManager.getInstance().isExternalSkin) {
                 skinView.apply()
             }
@@ -164,13 +163,13 @@ class MultiThemeFactory : LayoutInflater.Factory {
     }
 
     fun applyTheme() {
-        mSkinViewRefs.mapNotNull { it.get() }.forEach { skinView ->
+        mSkinViews.forEach { skinView ->
             skinView.view?.let {
                 skinView.apply()
             }
         }
         //execute Custom Theme View's function that contain updateTheme annotation
-        mViewImplRefList.mapNotNull { it.get() }.forEach { viewImpl ->
+        mViewImplList.forEach { viewImpl ->
             val clazz = viewImpl::class.java
             //clazz.declaredMethods may crash ,see https://juejin.cn/post/6899419907340992519
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && mutableListOf(
@@ -193,8 +192,7 @@ class MultiThemeFactory : LayoutInflater.Factory {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     internal fun clean() {
-        val mSkinViews = mSkinViewRefs.mapNotNull { it.get() }
-        if (mSkinViewRefs.isEmpty()) {
+        if (mSkinViews.isEmpty()) {
             return
         }
         for (skinView in mSkinViews) {
@@ -203,7 +201,6 @@ class MultiThemeFactory : LayoutInflater.Factory {
             }
             skinView.clean()
         }
-        mSkinViewRefs.clear()
     }
 
     private inline fun safeBlock(block: () -> Unit) {
